@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es" id="html-theme">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Pequeño Tesoro - Inicio</title> <meta name="theme-color" content="#FFB6C1">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Comic+Neue:wght@400;700&family=Roboto:wght@400;700&family=Open+Sans:wght@400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/main.css">
+    <style>
+        /* Estilos adicionales para el selector de diario (muy básico por ahora) */
+        .diario-activo-info {
+            text-align: center;
+            margin-bottom: 15px;
+            padding: 8px;
+            background-color: var(--color-secundario);
+            color: var(--color-texto);
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+        .diario-activo-info strong {
+            color: var(--color-primario);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 id="nombre-app-titulo">✨ Mi Pequeño Tesoro</h1>
+            <button id="btn-logout" title="Cerrar sesión">👋</button>
+            <nav>
+                <ul>
+                    <li><a href="index.html" class="active">🏠 Inicio</a></li>
+                    <li><a href="fotos.html">📷 Fotos</a></li>
+                    <li><a href="calendario.html">📅 Calendario</a></li>
+                    <li><a href="linea-tiempo.html">⏳ Línea de Tiempo</a></li>
+                    <li><a href="configuracion.html">⚙️ Configuración</a></li>
+                </ul>
+            </nav>
+        </header>
+        
+        <div id="global-index-message" class="mensaje" style="display:none;"></div>
+
+        <!-- Contenedor para información del diario activo -->
+        <div id="diario-selector-container" style="display:none;">
+            <div class="diario-activo-info">
+                Viendo: <strong id="nombre-diario-activo">Cargando diario...</strong>
+                </div>
+            </div>
+
+        <section class="perfil-bebe" id="perfil-bebe-seccion" style="display:none;"> <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMwIiBoZWlnaHQ9IjEzMCIgdmlld0JveD0iMCAwIDEzMCAxMzAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiNhYWEiPlNpbiBGb3RvPC90ZXh0Pjwvc3ZnPg==" alt="Foto del bebé" class="foto-perfil" id="foto-perfil-bebe">
+            <div class="info-bebe">
+                <h2 class="nombre-bebe" id="nombre-bebe">Cargando...</h2>
+                <div class="detalles-bebe">
+                    <div class="dato-bebe">
+                        <h3>Edad</h3>
+                        <p id="edad-bebe">--</p>
+                    </div>
+                    <div class="dato-bebe">
+                        <h3>Nacimiento</h3>
+                        <p id="fecha-nacimiento-bebe">--/--/----</p>
+                    </div>
+                    <div class="dato-bebe">
+                        <h3>Peso</h3>
+                        <p id="peso-bebe">-- kg</p>
+                    </div>
+                    <div class="dato-bebe">
+                        <h3>Altura</h3>
+                        <p id="altura-bebe">-- cm</p>
+                    </div>
+                </div>
+                <button class="btn-editar-perfil" id="btn-editar-perfil">✏️ Editar Perfil del Diario</button>
+            </div>
+        </section>
+
+        <section class="bienvenida">
+            <p id="mensaje-bienvenida">Bienvenido a tu diario de maternidad/paternidad, donde cada momento especial queda guardado para siempre.</p>
+        </section>
+
+        <div class="widgets-container" id="widgets-container-main" style="display:none;"> <div class="widget">
+                <div class="widget-header">
+                    <h2>Resumen del Diario</h2>
+                    <span class="widget-icon">📊</span>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Recuerdos</h3>
+                        <p class="stat-value" id="total-recuerdos">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Con Foto/Video</h3>
+                        <p class="stat-value" id="total-multimedia">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Hitos</h3>
+                        <p class="stat-value" id="total-hitos">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Favoritos</h3>
+                        <p class="stat-value" id="total-favoritos">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget">
+                <div class="widget-header">
+                    <h2>Próximos Eventos del Diario</h2>
+                    <span class="widget-icon">📅</span>
+                </div>
+                <div class="widget-content-list" id="proximos-eventos-lista">
+                    <p class="mensaje mensaje-carga">Cargando eventos...</p>
+                </div>
+            </div>
+
+            <div class="widget">
+                <div class="widget-header">
+                    <h2>Último Recuerdo Multimedia del Diario</h2>
+                    <span class="widget-icon">📷</span>
+                </div>
+                <div class="widget-content-list" id="ultima-multimedia-lista">
+                     <p class="mensaje mensaje-carga">Buscando recuerdos...</p>
+                </div>
+            </div>
+
+            <div class="widget">
+                <div class="widget-header">
+                    <h2>Hitos Recientes del Diario</h2>
+                    <span class="widget-icon">🌟</span>
+                </div>
+                <div class="widget-content-list" id="ultimos-hitos-lista">
+                    <p class="mensaje mensaje-carga">Buscando hitos...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="quick-actions" id="quick-actions-main" style="display:none;"> <a href="fotos.html" class="quick-action"> <span class="icon">➕</span> <span class="text">Añadir Recuerdo al Diario</span> </a>
+            <a href="calendario.html" class="quick-action"> <span class="icon">📅</span> <span class="text">Ver Calendario del Diario</span> </a>
+            <a href="linea-tiempo.html" class="quick-action"> <span class="icon">⏳</span> <span class="text">Línea de Tiempo del Diario</span> </a>
+            <a href="configuracion.html" class="quick-action"> <span class="icon">⚙️</span> <span class="text">Configurar Diario</span> </a>
+        </div>
+
+        <footer>
+            <p>&copy; <span id="current-year"></span> Con todo el amor del mundo - Diario de Mi Bebé </p>
+        </footer>
+    </div>
+
+    <script src="/js/theme-manager.js" defer></script>
+    <script src="/js/utils.js" defer></script> 
+    <script>
+        // fetchAPI, cerrarSesion, actualizarAnioFooter, mostrarMensajeGlobal, getActiveDiarioId, setActiveDiarioId vienen de utils.js
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const btnLogout = document.getElementById('btn-logout');
+            const btnEditarPerfil = document.getElementById('btn-editar-perfil');
+            const globalIndexMessageEl = document.getElementById('global-index-message');
+            const diarioSelectorContainerEl = document.getElementById('diario-selector-container');
+            const nombreDiarioActivoEl = document.getElementById('nombre-diario-activo');
+
+            // Función para gestionar y cargar el diario activo
+            async function gestionarYcargarDiarioActivo() {
+                let activeDiarioId = getActiveDiarioId();
+                let configDiarioActual;
+
+                if (!activeDiarioId) {
+                    try {
+                        // Si no hay diario activo en sessionStorage, obtener la lista de diarios del usuario
+                        const diariosAccesibles = await fetchAPI('/api/diarios');
+                        if (diariosAccesibles && diariosAccesibles.length > 0) {
+                            // Seleccionar el primer diario (o el primero que sea 'owner')
+                            const primerDiarioOwner = diariosAccesibles.find(d => d.rol_en_diario === 'owner');
+                            activeDiarioId = primerDiarioOwner ? primerDiarioOwner.id : diariosAccesibles[0].id;
+                            setActiveDiarioId(activeDiarioId);
+                            // Como acabamos de setearlo, necesitamos cargar su config para el nombre
+                            configDiarioActual = await fetchAPI('/api/configuracion'); // Este endpoint ya devuelve la config del diario principal/activo
+                        } else {
+                            mostrarMensajeGlobal('No tienes acceso a ningún diario. Puedes crear uno en Configuración.', 'info', globalIndexMessageEl);
+                            // Ocultar secciones que dependen de un diario
+                            ['perfil-bebe-seccion', 'widgets-container-main', 'quick-actions-main', 'diario-selector-container'].forEach(id => {
+                                const el = document.getElementById(id);
+                                if (el) el.style.display = 'none';
+                            });
+                            return false; // Indicar que no se pudo cargar un diario
+                        }
+                    } catch (error) {
+                        console.error("Error obteniendo lista de diarios:", error);
+                        if (error.message !== 'No autorizado') {
+                            mostrarMensajeGlobal('Error al cargar tus diarios.', 'error', globalIndexMessageEl);
+                        }
+                        return false; // Indicar fallo
+                    }
+                } else {
+                     // Si ya hay un activeDiarioId, cargar su configuración para obtener el nombre
+                     try {
+                        configDiarioActual = await fetchAPI('/api/configuracion'); // Asume que este endpoint usa el activeDiarioId implícitamente o devuelve el correcto
+                     } catch (error) {
+                        console.error("Error cargando configuración del diario activo:", error);
+                        if (error.message !== 'No autorizado') {
+                             mostrarMensajeGlobal('Error al cargar datos del diario activo.', 'error', globalIndexMessageEl);
+                        }
+                        // Podríamos intentar resetear activeDiarioId si la carga falla por no encontrado
+                        // setActiveDiarioId(null); 
+                        // return gestionarYcargarDiarioActivo(); // Intentar de nuevo
+                        return false;
+                     }
+                }
+                
+                if (configDiarioActual && nombreDiarioActivoEl && diarioSelectorContainerEl) {
+                    nombreDiarioActivoEl.textContent = configDiarioActual.nombre_diario_personalizado || `Diario ID: ${activeDiarioId}`;
+                    diarioSelectorContainerEl.style.display = 'block';
+                }
+
+
+                // Una vez que tenemos un diario activo (activeDiarioId está seteado), cargar el perfil y dashboard
+                if (getActiveDiarioId()) { // Doble chequeo por si la lógica anterior falló en setearlo
+                    await cargarPerfilBebe(configDiarioActual); // Pasar la config ya cargada
+                    await cargarDatosDashboard();
+                    return true; // Éxito
+                }
+                return false; // Fallo si no se pudo establecer un diario activo
+            }
+
+
+            async function verificarSesionYAdaptarUI() {
+                const mensajeBienvenidaEl = document.getElementById('mensaje-bienvenida');
+                const perfilBebeSeccion = document.getElementById('perfil-bebe-seccion');
+                const widgetsContainer = document.getElementById('widgets-container-main');
+                const quickActions = document.getElementById('quick-actions-main');
+                const navLinksProtegidos = document.querySelectorAll('nav a:not([href="index.html"]):not([href="login.html"])');
+                
+                try {
+                    const sessionData = await fetchAPI('/api/auth/check-session');
+
+                    if (sessionData && sessionData.loggedIn) {
+                        if(btnLogout) btnLogout.style.display = 'flex';
+                        
+                        const diarioCargado = await gestionarYcargarDiarioActivo();
+
+                        if (diarioCargado) {
+                            if(perfilBebeSeccion) perfilBebeSeccion.style.display = 'flex';
+                            if(widgetsContainer) widgetsContainer.style.display = 'grid';
+                            if(quickActions) quickActions.style.display = 'grid';
+                        }
+                        
+                        navLinksProtegidos.forEach(link => {
+                            link.style.opacity = '1';
+                            link.style.pointerEvents = 'auto';
+                        });
+                        
+                    } else {
+                        if(btnLogout) btnLogout.style.display = 'none';
+                        if (mensajeBienvenidaEl) {
+                            mensajeBienvenidaEl.innerHTML = '¡Bienvenido/a a Mi Pequeño Tesoro! <a href="login.html">Inicia sesión</a> o <a href="login.html#register">regístrate</a> para guardar los momentos especiales de tu bebé.';
+                        }
+                        if(perfilBebeSeccion) perfilBebeSeccion.style.display = 'none';
+                        if(widgetsContainer) widgetsContainer.style.display = 'none';
+                        if(diarioSelectorContainerEl) diarioSelectorContainerEl.style.display = 'none';
+                        if(quickActions) {
+                            quickActions.innerHTML = `
+                                <a href="login.html" class="quick-action">
+                                    <span class="icon">🔑</span> <span class="text">Iniciar Sesión / Registrarse</span>
+                                </a>`;
+                            quickActions.style.display = 'grid';
+                        }
+                        navLinksProtegidos.forEach(link => {
+                            link.style.opacity = '0.5';
+                            link.style.pointerEvents = 'none';
+                        });
+                        document.getElementById('nombre-bebe').textContent = 'Inicia Sesión';
+                        ['edad-bebe', 'fecha-nacimiento-bebe', 'peso-bebe', 'altura-bebe'].forEach(id => {
+                            const el = document.getElementById(id);
+                            if(el) el.textContent = '--';
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error verificando sesión:", error);
+                    if (mensajeBienvenidaEl && error.message !== 'No autorizado') mensajeBienvenidaEl.textContent = "Error al cargar la página. Intenta de nuevo más tarde.";
+                    if (error.message !== 'No autorizado') mostrarMensajeGlobal("Error de conexión con el servidor. Intenta recargar.", 'error', globalIndexMessageEl);
+                }
+            }
+
+            async function cargarPerfilBebe(config) { // Acepta la configuración ya cargada
+                const nombreAppTituloEl = document.getElementById('nombre-app-titulo');
+                const nombreBebeEl = document.getElementById('nombre-bebe');
+                const fotoPerfilEl = document.getElementById('foto-perfil-bebe');
+                const edadBebeEl = document.getElementById('edad-bebe');
+                const fechaNacimientoBebeEl = document.getElementById('fecha-nacimiento-bebe');
+                const pesoBebeEl = document.getElementById('peso-bebe');
+                const alturaBebeEl = document.getElementById('altura-bebe');
+                const bienvenidaMsgEl = document.getElementById('mensaje-bienvenida');
+                const placeholderFoto = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMwIiBoZWlnaHQ9IjEzMCIgdmlld0JveD0iMCAwIDEzMCAxMzAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiNhYWEiPlNpbiBGb3RvPC90ZXh0Pjwvc3ZnPg==';
+
+                if (!config) { // Si no se pasó la config (ej. llamada directa), cargarla
+                    try {
+                        config = await fetchAPI('/api/configuracion');
+                    } catch (error) {
+                         console.error('Error cargando perfil del bebé (config):', error);
+                        if (nombreBebeEl) nombreBebeEl.textContent = 'Error al cargar';
+                        if (bienvenidaMsgEl && error.message !== 'No autorizado') {
+                            bienvenidaMsgEl.textContent = "Error al cargar datos del perfil.";
+                        }
+                        return;
+                    }
+                }
+                
+                // Ahora 'config' tiene la configuración del diario activo
+                const perfil = config.perfil_bebe || {};
+                
+                if(document.title && config.nombre_diario_personalizado) document.title = `${config.nombre_diario_personalizado} - Inicio`;
+                if(nombreAppTituloEl && config.nombre_diario_personalizado) nombreAppTituloEl.textContent = `✨ ${config.nombre_diario_personalizado}`;
+                
+                if (nombreBebeEl) nombreBebeEl.textContent = perfil.nombre_completo || 'Nombre del Bebé';
+                if (bienvenidaMsgEl) {
+                    if (config.mensaje_bienvenida) {
+                         bienvenidaMsgEl.textContent = config.mensaje_bienvenida.replace('{nombreBebe}', perfil.nombre_completo ? perfil.nombre_completo.split(' ')[0] : 'tu bebé');
+                    } else if (perfil.nombre_completo) {
+                        bienvenidaMsgEl.textContent = `¡Hola! Aquí tienes un resumen de los tesoros de ${perfil.nombre_completo.split(' ')[0]}.`;
+                    } else {
+                         bienvenidaMsgEl.textContent = `¡Bienvenido/a! Aquí tienes un resumen de los tesoros de tu bebé.`;
+                    }
+                }
+
+                if (fotoPerfilEl) {
+                    fotoPerfilEl.src = (perfil.foto && perfil.foto.startsWith('data:image')) ? perfil.foto : placeholderFoto;
+                    fotoPerfilEl.alt = perfil.nombre_completo ? `Foto de ${perfil.nombre_completo}` : "Foto del bebé";
+                }
+
+                if (perfil.fecha_nacimiento) {
+                    const fechaNac = new Date(perfil.fecha_nacimiento + 'T00:00:00Z');
+                    if (fechaNacimientoBebeEl) fechaNacimientoBebeEl.textContent = fechaNac.toLocaleDateString('es-ES', { timeZone: 'UTC' });
+                    
+                    const hoy = new Date();
+                    let meses = (hoy.getFullYear() - fechaNac.getFullYear()) * 12;
+                    meses -= fechaNac.getMonth();
+                    meses += hoy.getMonth();
+                    if (hoy.getDate() < fechaNac.getDate()) meses--;
+                    
+                    if (edadBebeEl) {
+                        if (meses < 0) meses = 0;
+                        if (meses < 1) {
+                            let dias = Math.floor((hoy - fechaNac) / (1000 * 60 * 60 * 24));
+                            if (dias < 0) dias = 0;
+                            edadBebeEl.textContent = `${dias} ${dias === 1 ? 'día' : 'días'}`;
+                        } else if (meses < 24) {
+                            edadBebeEl.textContent = `${meses} ${meses === 1 ? 'mes' : 'meses'}`;
+                        } else {
+                            const anios = Math.floor(meses / 12);
+                            const mesesRestantes = meses % 12;
+                            edadBebeEl.textContent = `${anios} ${anios === 1 ? 'año' : 'años'}${mesesRestantes > 0 ? ` y ${mesesRestantes} ${mesesRestantes === 1 ? 'mes' : 'meses'}` : ''}`;
+                        }
+                    }
+                } else if (edadBebeEl && fechaNacimientoBebeEl) {
+                    edadBebeEl.textContent = '--';
+                    fechaNacimientoBebeEl.textContent = '--/--/----';
+                }
+                
+                if (pesoBebeEl) pesoBebeEl.textContent = perfil.peso_nacimiento ? `${perfil.peso_nacimiento} kg` : '-- kg';
+                if (alturaBebeEl) alturaBebeEl.textContent = perfil.estatura_nacimiento ? `${perfil.estatura_nacimiento} cm`: '-- cm';
+            }
+            
+            function mostrarErrorEnWidget(containerId, mensaje) {
+                const container = document.getElementById(containerId);
+                if (container) {
+                    container.innerHTML = `<p class="mensaje mensaje-error">${mensaje}</p>`;
+                }
+            }
+            function mostrarVacioEnWidget(containerId, mensaje) {
+                const container = document.getElementById(containerId);
+                if (container) {
+                     container.innerHTML = `<p class="mensaje mensaje-vacio">${mensaje}</p>`;
+                }
+            }
+
+            async function cargarDatosDashboard() {
+                const activeDiarioId = getActiveDiarioId();
+                if (!activeDiarioId) {
+                    console.warn("No hay diario activo para cargar dashboard.");
+                    // Ocultar o mostrar mensaje en widgets
+                    ['total-recuerdos', 'total-multimedia', 'total-hitos', 'total-favoritos'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.textContent = '0';
+                    });
+                    mostrarVacioEnWidget('proximos-eventos-lista', 'Selecciona un diario para ver eventos.');
+                    mostrarVacioEnWidget('ultima-multimedia-lista', 'Selecciona un diario para ver multimedia.');
+                    mostrarVacioEnWidget('ultimos-hitos-lista', 'Selecciona un diario para ver hitos.');
+                    return;
+                }
+
+                try {
+                    // Usar el endpoint que obtiene eventos por ID de diario
+                    const eventos = await fetchAPI(`/api/eventos/diario/${activeDiarioId}`); 
+                    if (!eventos) { 
+                        throw new Error("No se recibieron datos de eventos para el diario " + activeDiarioId);
+                    }
+                    
+                    document.getElementById('total-recuerdos').textContent = eventos.length;
+                    document.getElementById('total-multimedia').textContent = eventos.filter(e => e.media_url || e.tipo === 'foto' || e.tipo === 'video').length;
+                    document.getElementById('total-hitos').textContent = eventos.filter(e => e.tipo === 'hito').length;
+                    document.getElementById('total-favoritos').textContent = eventos.filter(e => e.favorito).length;
+
+                    const hoy = new Date();
+                    hoy.setHours(0,0,0,0); 
+                    const proximos30Dias = new Date(hoy);
+                    proximos30Dias.setDate(hoy.getDate() + 30);
+
+                    const eventosProximos = eventos
+                        .filter(evento => {
+                            const fechaEvento = new Date(evento.fecha + 'T00:00:00Z');
+                            return fechaEvento >= hoy && fechaEvento <= proximos30Dias && evento.tipo !== 'foto' && evento.tipo !== 'video';
+                        })
+                        .sort((a, b) => new Date(a.fecha) - new Date(b.fecha))
+                        .slice(0, 3); 
+
+                    const proxEventosCont = document.getElementById('proximos-eventos-lista');
+                    proxEventosCont.innerHTML = ''; 
+                    if (eventosProximos.length > 0) {
+                        eventosProximos.forEach(evento => {
+                            const fechaEv = new Date(evento.fecha + 'T00:00:00Z');
+                            const item = document.createElement('div');
+                            item.className = 'evento-proximo';
+                            item.innerHTML = `<h3>${evento.titulo}</h3><div class="evento-fecha">${fechaEv.toLocaleDateString('es-ES', {day: 'numeric', month: 'long', timeZone: 'UTC'})}</div>`;
+                            item.addEventListener('click', () => window.location.href = `calendario.html#fecha=${evento.fecha}`); // El calendario también necesitará saber el diario activo
+                            proxEventosCont.appendChild(item);
+                        });
+                         if (eventos.filter(e => new Date(e.fecha + 'T00:00:00Z') >= hoy && e.tipo !== 'foto' && e.tipo !== 'video').length > 3) {
+                            const verMas = document.createElement('a');
+                            verMas.href = 'calendario.html';
+                            verMas.className = 'ver-mas-link';
+                            verMas.textContent = 'Ver todos en calendario...';
+                            proxEventosCont.appendChild(verMas);
+                        }
+                    } else {
+                        mostrarVacioEnWidget('proximos-eventos-lista', 'No hay eventos próximos en los siguientes 30 días para este diario.');
+                    }
+
+                    const recuerdosMultimedia = eventos
+                        .filter(e => (e.media_url || e.tipo === 'foto' || e.tipo === 'video')) 
+                        .sort((a, b) => new Date(b.fecha + (b.created_at || '')) - new Date(a.fecha + (a.created_at || '')))
+                        .slice(0, 1); 
+
+                    const ultMultimediaCont = document.getElementById('ultima-multimedia-lista');
+                    ultMultimediaCont.innerHTML = '';
+                    if (recuerdosMultimedia.length > 0 && recuerdosMultimedia[0].media_url) {
+                        const media = recuerdosMultimedia[0];
+                        const item = document.createElement('div');
+                        item.className = 'foto-reciente-container';
+                        const mediaElement = media.tipo === 'video' ? 
+                            `<video src="${media.media_url}" class="foto-reciente" controls muted playsinline preload="metadata"></video>` :
+                            `<img src="${media.media_url}" alt="${media.titulo}" class="foto-reciente" loading="lazy">`;
+                        
+                        item.innerHTML = `
+                            ${mediaElement}
+                            <div class="foto-titulo">${media.titulo}</div>
+                            <div class="foto-fecha">${new Date(media.fecha + 'T00:00:00Z').toLocaleDateString('es-ES', { timeZone: 'UTC' })}</div>`;
+                        item.addEventListener('click', () => window.location.href = `fotos.html#media-${media.id}`);
+                        ultMultimediaCont.appendChild(item);
+                    } else {
+                         mostrarVacioEnWidget('ultima-multimedia-lista', 'No hay fotos o videos recientes en este diario.');
+                    }
+
+                    const hitosRecientes = eventos
+                        .filter(e => e.tipo === 'hito')
+                        .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
+                        .slice(0, 3); 
+
+                    const ultHitosCont = document.getElementById('ultimos-hitos-lista');
+                    ultHitosCont.innerHTML = '';
+                    if (hitosRecientes.length > 0) {
+                        hitosRecientes.forEach(hito => {
+                            const item = document.createElement('div');
+                            item.className = 'hito-reciente-item'; 
+                            item.innerHTML = `<h3>${hito.titulo}</h3><div class="hito-fecha">${new Date(hito.fecha + 'T00:00:00Z').toLocaleDateString('es-ES', {day: 'numeric', month: 'short', timeZone: 'UTC'})}</div>`;
+                            item.addEventListener('click', () => window.location.href = `linea-tiempo.html#evento-${hito.id}`);
+                            ultHitosCont.appendChild(item);
+                        });
+                        if (eventos.filter(e => e.tipo === 'hito').length > 3) {
+                            const verMas = document.createElement('a');
+                            verMas.href = 'linea-tiempo.html?filtro=hito'; 
+                            verMas.className = 'ver-mas-link';
+                            verMas.textContent = 'Ver todos los hitos...';
+                            ultHitosCont.appendChild(verMas);
+                        }
+                    } else {
+                        mostrarVacioEnWidget('ultimos-hitos-lista', 'No hay hitos recientes en este diario.');
+                    }
+
+                } catch (error) {
+                    console.error('Error cargando datos del dashboard para el diario ' + activeDiarioId + ':', error);
+                    if (error.message !== 'No autorizado') {
+                        mostrarErrorEnWidget('proximos-eventos-lista', 'Error al cargar eventos.');
+                        mostrarErrorEnWidget('ultima-multimedia-lista', 'Error al cargar multimedia.');
+                        mostrarErrorEnWidget('ultimos-hitos-lista', 'Error al cargar hitos.');
+                    }
+                }
+            }
+            
+            function configurarLogout() {
+                if (btnLogout) {
+                    btnLogout.addEventListener('click', cerrarSesion);
+                }
+            }
+            
+            await verificarSesionYAdaptarUI(); 
+            configurarLogout();
+            
+            if (btnEditarPerfil) {
+                btnEditarPerfil.addEventListener('click', () => {
+                    // El enlace a configuración ya no necesita #perfil directamente,
+                    // ya que la página de configuración cargará la config del diario activo.
+                    window.location.href = 'configuracion.html'; 
+                });
+            }
+            
+            // Escuchar cambios en el diario activo (si se implementa un selector)
+            window.addEventListener('activeDiarioChanged', async (event) => {
+                console.log('Diario activo cambiado a:', event.detail.diarioId);
+                mostrarMensajeGlobal('Cargando datos del nuevo diario...', 'carga', globalIndexMessageEl);
+                await gestionarYcargarDiarioActivo(); // Recargar todo con el nuevo contexto
+                mostrarMensajeGlobal('', '', globalIndexMessageEl); // Limpiar mensaje
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="es" id="html-theme">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Pequeño Tesoro - Fotos y Videos</title>
+    <meta name="theme-color" content="#FFB6C1">
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Comic+Neue:wght@400;700&family=Roboto:wght@400;700&family=Open+Sans:wght@400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/main.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <style>
+        /* Variables CSS se definen en main.css y son actualizadas por theme-manager.js */
+
+        body {
+            font-family: var(--fuente-principal);
+            background-color: var(--color-fondo);
+            color: var(--color-texto);
+        }
+
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 20px auto;
+            background-color: var(--color-tarjetas);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .gallery-item {
+            position: relative;
+            background-color: var(--color-fondo);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 250px; /* Altura fija para los elementos de la galería */
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .gallery-item img,
+        .gallery-item video {
+            width: 100%;
+            height: 180px; /* Altura fija para el medio */
+            object-fit: cover;
+            display: block;
+            border-bottom: 1px solid var(--color-bordes);
+        }
+
+        .gallery-item-info {
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9em;
+            color: var(--color-texto);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .gallery-item-info .date {
+            font-weight: bold;
+            color: var(--color-primario);
+            margin-bottom: 5px;
+        }
+
+        .gallery-item-info .description {
+            font-size: 0.85em;
+            color: var(--color-texto-claro);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .gallery-item .favorite-icon {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            color: gold;
+            font-size: 1.5em;
+            text-shadow: 0 0 5px rgba(0,0,0,0.3);
+            pointer-events: none; /* Para que no interfiera con el click del item */
+        }
+
+        .gallery-item.video-type .video-play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3em;
+            color: rgba(255, 255, 255, 0.8);
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+            pointer-events: none;
+        }
+
+        /* Fullscreen Modal */
+        .fullscreen-modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: hidden; /* Disable scroll */
+            background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .fullscreen-content {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            max-width: 90vw;
+            max-height: 90vh;
+        }
+
+        .fullscreen-content img,
+        .fullscreen-content video {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        .fullscreen-nav, .fullscreen-close, .fullscreen-play, .fullscreen-fullscreen {
+            position: absolute;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 2em;
+            color: white;
+            cursor: pointer;
+            z-index: 1010;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .fullscreen-nav:hover, .fullscreen-close:hover, .fullscreen-play:hover, .fullscreen-fullscreen:hover {
+            background: rgba(255,255,255,0.4);
+            transform: scale(1.1);
+        }
+
+        .fullscreen-nav.prev {
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .fullscreen-nav.next {
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .fullscreen-close {
+            top: 20px;
+            right: 20px;
+            font-size: 1.5em;
+            width: 40px;
+            height: 40px;
+        }
+
+        .fullscreen-info {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.5);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 1em;
+            text-align: center;
+            max-width: 80%;
+            z-index: 1005;
+        }
+
+        .fullscreen-info p {
+            margin: 0;
+        }
+
+        .fullscreen-controls-bottom {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1010;
+        }
+
+        .fullscreen-play, .fullscreen-fullscreen {
+            position: relative; /* Ajusta para que los botones estén en el flujo flex */
+            top: auto;
+            left: auto;
+            transform: none;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5em;
+        }
+
+        /* Estilos para el modal de nuevo recuerdo */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .modal-content {
+            background-color: var(--color-tarjetas);
+            padding: 30px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-content h2 {
+            color: var(--color-primario);
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+            font-family: var(--fuente-titulo);
+        }
+
+        .modal-content label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--color-texto);
+        }
+
+        .modal-content input[type="date"],
+        .modal-content input[type="file"],
+        .modal-content textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid var(--color-bordes);
+            border-radius: 8px;
+            font-family: var(--fuente-principal);
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+
+        .modal-content textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-content .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+
+        .modal-content .checkbox-container input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .modal-content .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-content .modal-buttons .btn {
+            min-width: 100px;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.8em;
+            cursor: pointer;
+            color: var(--color-texto-claro);
+            transition: color 0.3s ease;
+        }
+
+        .modal-close-btn:hover {
+            color: var(--color-primario);
+        }
+
+        /* Cropper CSS */
+        .image-cropper-container {
+            max-width: 100%;
+            margin-bottom: 15px;
+        }
+        .img-container {
+            max-height: 400px;
+            overflow: hidden;
+        }
+        .img-container img {
+            max-width: 100%;
+            display: block;
+        }
+
+        /* Estilos para el loader de infinite scroll */
+        .loader {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2em;
+            color: var(--color-texto-claro);
+        }
+
+        .loader.hidden {
+            display: none;
+        }
+
+        /* Mensajes de estado */
+        .mensaje {
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .mensaje.carga {
+            background-color: #e0f7fa;
+            color: #00796b;
+        }
+        .mensaje.error {
+            background-color: var(--color-error);
+            color: white;
+        }
+        .mensaje.exito {
+            background-color: var(--color-exito);
+            color: white;
+        }
+        .mensaje.vacio {
+            background-color: #fff3e0;
+            color: #e65100;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            border-top: 1px solid var(--color-bordes);
+            color: var(--color-texto-claro);
+            font-size: 0.9em;
+        }
+
+        /* Filters container for fotos.html */
+        .filters-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: var(--color-secundario);
+            border-radius: 10px;
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: var(--color-texto);
+            font-size: 0.9em;
+        }
+
+        .filters-container input[type="text"],
+        .filters-container select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--color-bordes);
+            border-radius: 5px;
+            font-family: var(--fuente-principal);
+            font-size: 0.9em;
+            box-sizing: border-box;
+            background-color: var(--color-tarjetas);
+            color: var(--color-texto);
+        }
+
+        .filters-container button {
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            margin-top: 10px; /* Para alinear con los inputs */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .gallery-container {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 10px;
+                padding: 10px;
+            }
+            .gallery-item {
+                height: 200px;
+            }
+            .gallery-item img,
+            .gallery-item video {
+                height: 140px;
+            }
+            .fullscreen-nav, .fullscreen-close, .fullscreen-play, .fullscreen-fullscreen {
+                width: 40px;
+                height: 40px;
+                font-size: 1.5em;
+            }
+            .fullscreen-nav.prev { left: 10px; }
+            .fullscreen-nav.next { right: 10px; }
+            .fullscreen-close { top: 10px; right: 10px; }
+            .fullscreen-info { font-size: 0.9em; padding: 8px 15px; bottom: 10px; }
+            .fullscreen-controls-bottom { bottom: 10px; gap: 10px; }
+            .modal-content {
+                padding: 20px;
+            }
+            .filters-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .filter-group {
+                min-width: unset;
+                width: 100%;
+            }
+            .filters-container button {
+                width: 100%;
+                margin-top: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <button id="btn-back" class="btn-icono" title="Volver a Inicio" onclick="window.history.back()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+            </button>
+            <h1 id="nombre-app-titulo">✨ Mi Pequeño Tesoro</h1>
+            <button id="btn-logout" class="btn-icono" title="Cerrar Sesión">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+            </button>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="fotos.html" class="active">Fotos y Videos</a></li>
+                <li><a href="calendario.html">Calendario</a></li>
+                <li><a href="linea-tiempo.html">Línea de Tiempo</a></li>
+                <li><a href="configuracion.html">Configuración</a></li>
+            </ul>
+        </nav>
+
+        <div id="global-gallery-message" class="mensaje"></div>
+        <div class="diario-activo-info" id="diario-activo-info" style="display:none;">
+            Diario actual: <strong id="nombre-diario-actual"></strong>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 20px;">
+            <button id="btn-add-memory" class="btn btn-primario">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                Añadir Nuevo Recuerdo
+            </button>
+        </div>
+
+        <!-- Controles de Búsqueda y Filtros para Fotos -->
+        <div class="filters-container">
+            <div class="filter-group">
+                <label for="search-query-fotos">Buscar:</label>
+                <input type="text" id="search-query-fotos" placeholder="Descripción...">
+            </div>
+            <div class="filter-group">
+                <label for="filter-type-fotos">Tipo de Medio:</label>
+                <select id="filter-type-fotos">
+                    <option value="">Todos</option>
+                    <option value="foto">Fotos</option>
+                    <option value="video">Videos</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filter-favorite-fotos">Favorito:</label>
+                <select id="filter-favorite-fotos">
+                    <option value="">Todos</option>
+                    <option value="1">Sí</option>
+                </select>
+            </div>
+            <button id="apply-filters-fotos" class="btn btn-primario">Aplicar Filtros</button>
+            <button id="clear-filters-fotos" class="btn btn-secundario">Limpiar Filtros</button>
+        </div>
+
+        <main class="gallery-container" id="gallery-container">
+            <!-- Los recuerdos se cargarán aquí -->
+        </main>
+
+        <div id="loader" class="loader hidden">Cargando más recuerdos...</div>
+        <div id="no-more-memories" class="mensaje vacio hidden">No hay más recuerdos para mostrar.</div>
+        <div id="no-memories-yet" class="mensaje vacio hidden">No hay recuerdos aún en este diario. ¡Añade el primero!</div>
+
+    </div>
+
+    <!-- Fullscreen Modal -->
+    <div id="fullscreen-modal" class="fullscreen-modal">
+        <button id="btn-fs-close" class="fullscreen-close" title="Cerrar">✖</button>
+        <button id="btn-fs-prev" class="fullscreen-nav prev" title="Anterior">‹</button>
+        <button id="btn-fs-next" class="fullscreen-nav next" title="Siguiente">›</button>
+        <div class="fullscreen-content">
+            <img id="fs-image" src="" alt="Recuerdo" style="display: none;">
+            <video id="fs-video" src="" controls style="display: none;"></video>
+        </div>
+        <div class="fullscreen-info">
+            <p id="fs-date"></p>
+            <p id="fs-description"></p>
+        </div>
+        <div class="fullscreen-controls-bottom">
+            <button id="btn-fs-play" class="fullscreen-play" title="Reproducir/Pausar Slideshow">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-play"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            </button>
+            <button id="btn-fs-fullscreen" class="fullscreen-fullscreen" title="Pantalla Completa">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-maximize"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3m-18 0v3a2 2 0 0 0 2 2h3"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal para Añadir/Editar Recuerdo -->
+    <div id="modal-nuevo-recuerdo" class="modal">
+        <div class="modal-content">
+            <button class="modal-close-btn" id="close-modal-recuerdo">✖</button>
+            <h2 id="modal-recuerdo-title">Añadir Nuevo Recuerdo</h2>
+            <form id="form-recuerdo">
+                <input type="hidden" id="recuerdo-id">
+                <label for="recuerdo-file">Archivo (Foto/Video):</label>
+                <input type="file" id="recuerdo-file" accept="image/*,video/mp4,video/quicktime">
+                <div id="image-cropper-container" class="image-cropper-container" style="display:none;">
+                    <div class="img-container">
+                        <img id="image-to-crop" src="" alt="Imagen a recortar">
+                    </div>
+                    <button type="button" id="btn-crop-image" class="btn btn-secundario" style="margin-top: 10px;">Recortar Imagen</button>
+                </div>
+
+                <label for="recuerdo-date">Fecha:</label>
+                <input type="date" id="recuerdo-date" required>
+
+                <label for="recuerdo-description">Descripción:</label>
+                <textarea id="recuerdo-description" placeholder="Un momento especial..."></textarea>
+
+                <div class="checkbox-container">
+                    <input type="checkbox" id="recuerdo-favorito">
+                    <label for="recuerdo-favorito">Marcar como favorito</label>
+                </div>
+
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-secundario" id="cancel-recuerdo">Cancelar</button>
+                    <button type="submit" class="btn btn-primario" id="save-recuerdo">Guardar Recuerdo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; <span id="current-year"></span> Mi Pequeño Tesoro. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="/js/utils.js"></script>
+    <script src="/js/theme-manager.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const galleryContainer = document.getElementById('gallery-container');
+            const loaderEl = document.getElementById('loader');
+            const noMoreMemoriesEl = document.getElementById('no-more-memories');
+            const noMemoriesYetEl = document.getElementById('no-memories-yet');
+            const globalGalleryMessageEl = document.getElementById('global-gallery-message');
+            const btnAddMemory = document.getElementById('btn-add-memory');
+            const btnLogout = document.getElementById('btn-logout');
+
+            // Elementos de filtro
+            const searchQueryInput = document.getElementById('search-query-fotos');
+            const filterTypeSelect = document.getElementById('filter-type-fotos');
+            const filterFavoriteSelect = document.getElementById('filter-favorite-fotos');
+            const applyFiltersBtn = document.getElementById('apply-filters-fotos');
+            const clearFiltersBtn = document.getElementById('clear-filters-fotos');
+
+
+            // Modal de Nuevo/Editar Recuerdo
+            const modalNuevoRecuerdo = document.getElementById('modal-nuevo-recuerdo');
+            const closeModalRecuerdoBtn = document.getElementById('close-modal-recuerdo');
+            const cancelRecuerdoBtn = document.getElementById('cancel-recuerdo');
+            const formRecuerdo = document.getElementById('form-recuerdo');
+            const recuerdoIdInput = document.getElementById('recuerdo-id');
+            const recuerdoFileInput = document.getElementById('recuerdo-file');
+            const recuerdoDateInput = document.getElementById('recuerdo-date');
+            const recuerdoDescriptionInput = document.getElementById('recuerdo-description');
+            const recuerdoFavoritoInput = document.getElementById('recuerdo-favorito');
+            const modalRecuerdoTitle = document.getElementById('modal-recuerdo-title');
+            const imageCropperContainer = document.getElementById('image-cropper-container');
+            const imageToCrop = document.getElementById('image-to-crop');
+            const btnCropImage = document.getElementById('btn-crop-image');
+
+            let cropper; // Instancia de Cropper.js
+
+            // Fullscreen Modal Elements
+            const fullscreenModal = document.getElementById('fullscreen-modal');
+            const btnFsClose = document.getElementById('btn-fs-close');
+            const btnFsPrev = document.getElementById('btn-fs-prev');
+            const btnFsNext = document.getElementById('btn-fs-next');
+            const fsImage = document.getElementById('fs-image');
+            const fsVideo = document.getElementById('fs-video');
+            const fsDate = document.getElementById('fs-date');
+            const fsDescription = document.getElementById('fs-description');
+            const btnFsPlay = document.getElementById('btn-fs-play');
+            const btnFsFullscreen = document.getElementById('btn-fs-fullscreen');
+
+            let allMemories = []; // Almacena todos los recuerdos cargados para el slideshow
+            let currentMemoryIndex = 0;
+            let slideshowInterval;
+
+            // Variables de paginación
+            let currentPage = 0;
+            const memoriesPerPage = 12; // Cantidad de recuerdos a cargar por página
+            let isLoading = false;
+            let hasMoreMemories = true; // Indica si hay más recuerdos para cargar
+            let currentActiveDiarioId = null; // Para almacenar el ID del diario activo
+
+            // Función para abrir el modal de nuevo recuerdo
+            function abrirModalNuevoRecuerdo() {
+                modalRecuerdoTitle.textContent = 'Añadir Nuevo Recuerdo';
+                formRecuerdo.reset();
+                recuerdoIdInput.value = '';
+                recuerdoFileInput.style.display = 'block'; // Mostrar input de archivo para nuevos recuerdos
+                imageCropperContainer.style.display = 'none'; // Ocultar cropper por defecto
+                btnCropImage.style.display = 'block'; // Mostrar botón de recortar
+                if (cropper) {
+                    cropper.destroy(); // Destruir instancia anterior si existe
+                    cropper = null;
+                }
+                modalNuevoRecuerdo.style.display = 'flex';
+            }
+
+            // Función para abrir el modal de edición de recuerdo
+            async function abrirModalEditarRecuerdo(recuerdoId) {
+                try {
+                    const recuerdo = await fetchAPI(`/api/recuerdos/${recuerdoId}?diario_id=${currentActiveDiarioId}`, 'GET');
+                    if (recuerdo) {
+                        modalRecuerdoTitle.textContent = 'Editar Recuerdo';
+                        recuerdoIdInput.value = recuerdo.id;
+                        recuerdoDateInput.value = recuerdo.fecha;
+                        recuerdoDescriptionInput.value = recuerdo.descripcion || '';
+                        recuerdoFavoritoInput.checked = recuerdo.favorito === 1;
+                        recuerdoFileInput.style.display = 'none'; // Ocultar input de archivo para edición
+                        imageCropperContainer.style.display = 'none'; // Ocultar cropper
+                        btnCropImage.style.display = 'none'; // Ocultar botón de recortar
+                        if (cropper) {
+                            cropper.destroy();
+                            cropper = null;
+                        }
+                        modalNuevoRecuerdo.style.display = 'flex';
+                    } else {
+                        mostrarMensajeGlobal('Recuerdo no encontrado para editar.', 'error', globalGalleryMessageEl);
+                    }
+                } catch (error) {
+                    console.error('Error al cargar recuerdo para edición:', error);
+                    mostrarMensajeGlobal('Error al cargar recuerdo para edición.', 'error', globalGalleryMessageEl);
+                }
+            }
+
+            // Función para cerrar el modal de recuerdo
+            function cerrarModalRecuerdo() {
+                modalNuevoRecuerdo.style.display = 'none';
+                if (cropper) {
+                    cropper.destroy();
+                    cropper = null;
+                }
+                recuerdoFileInput.value = ''; // Limpiar el input de archivo
+                imageToCrop.src = ''; // Limpiar la imagen del cropper
+                imageCropperContainer.style.display = 'none';
+                btnCropImage.style.display = 'block'; // Asegurarse de que el botón de recortar esté visible para la próxima vez
+            }
+
+            // Función para crear un elemento de galería
+            function crearGalleryItem(recuerdo) {
+                const item = document.createElement('div');
+                item.classList.add('gallery-item');
+                item.dataset.id = recuerdo.id;
+                // El índice se asignará al añadir al array allMemories
+                item.dataset.type = recuerdo.tipo; // Añadir tipo para filtros
+
+                let mediaElement;
+                if (recuerdo.tipo === 'foto') {
+                    mediaElement = document.createElement('img');
+                    mediaElement.src = recuerdo.thumbnail_url || recuerdo.url; // Usar thumbnail si existe
+                    mediaElement.alt = recuerdo.descripcion || 'Foto del bebé';
+                } else { // video
+                    mediaElement = document.createElement('video');
+                    mediaElement.src = recuerdo.url;
+                    mediaElement.controls = false; // No mostrar controles en la vista de galería
+                    mediaElement.preload = 'metadata'; // Cargar solo metadatos para previsualización
+                    item.classList.add('video-type'); // Clase para estilos específicos de video
+                    const playIcon = document.createElement('span');
+                    playIcon.classList.add('video-play-icon');
+                    playIcon.textContent = '▶️'; // Unicode play icon
+                    item.appendChild(playIcon);
+                }
+                item.appendChild(mediaElement);
+
+                const info = document.createElement('div');
+                info.classList.add('gallery-item-info');
+
+                const date = document.createElement('div');
+                date.classList.add('date');
+                date.textContent = recuerdo.fecha;
+                info.appendChild(date);
+
+                const description = document.createElement('div');
+                description.classList.add('description');
+                description.textContent = recuerdo.descripcion || 'Sin descripción';
+                info.appendChild(description);
+
+                item.appendChild(info);
+
+                if (recuerdo.favorito === 1) {
+                    const favoriteIcon = document.createElement('span');
+                    favoriteIcon.classList.add('favorite-icon');
+                    favoriteIcon.textContent = '⭐';
+                    item.appendChild(favoriteIcon);
+                }
+
+                item.addEventListener('click', () => abrirFullscreenModal(recuerdo.id));
+                return item;
+            }
+
+            // Función para cargar recuerdos desde la API
+            async function cargarRecuerdosDeAPI(reset = false) {
+                if (isLoading && !reset) {
+                    return;
+                }
+
+                if (reset) {
+                    currentPage = 0;
+                    galleryContainer.innerHTML = ''; // Limpiar elementos anteriores
+                    allMemories = []; // Limpiar array de recuerdos
+                    hasMoreMemories = true;
+                    noMemoriesYetEl.classList.add('hidden');
+                    noMoreMemoriesEl.classList.add('hidden');
+                    mostrarMensajeGlobal('', '', globalGalleryMessageEl); // Limpiar mensajes
+                }
+
+                if (!hasMoreMemories || !currentActiveDiarioId) {
+                    loaderEl.classList.add('hidden');
+                    if (galleryContainer.children.length === 0) { // Si no hay recuerdos después de un filtro
+                        noMemoriesYetEl.classList.remove('hidden');
+                        noMoreMemoriesEl.classList.add('hidden'); // Asegurarse de que este esté oculto
+                    } else if (!hasMoreMemories && currentPage > 0) {
+                        noMoreMemoriesEl.classList.remove('hidden');
+                        noMemoriesYetEl.classList.add('hidden'); // Asegurarse de que este esté oculto
+                    }
+                    return;
+                }
+
+                isLoading = true;
+                loaderEl.classList.remove('hidden');
+                noMoreMemoriesEl.classList.add('hidden');
+                noMemoriesYetEl.classList.add('hidden');
+
+                try {
+                    const offset = currentPage * memoriesPerPage;
+                    const queryParams = new URLSearchParams();
+                    queryParams.append('limit', memoriesPerPage);
+                    queryParams.append('offset', offset);
+                    queryParams.append('diario_id', currentActiveDiarioId);
+
+                    const searchQuery = searchQueryInput.value.trim();
+                    if (searchQuery) queryParams.append('searchQuery', searchQuery);
+                    if (filterTypeSelect.value) queryParams.append('tipo', filterTypeSelect.value);
+                    if (filterFavoriteSelect.value) queryParams.append('favorito', filterFavoriteSelect.value);
+
+                    const response = await fetchAPI(`/api/recuerdos?${queryParams.toString()}`, 'GET');
+                    const { recuerdos, total } = response;
+
+                    if (recuerdos.length === 0 && currentPage === 0) {
+                        noMemoriesYetEl.classList.remove('hidden');
+                        hasMoreMemories = false;
+                        loaderEl.classList.add('hidden');
+                        return;
+                    }
+
+                    recuerdos.forEach(recuerdo => {
+                        allMemories.push(recuerdo); // Añadir al array global para el slideshow
+                        const item = crearGalleryItem(recuerdo);
+                        galleryContainer.appendChild(item);
+                    });
+
+                    currentPage++;
+                    if (recuerdos.length < memoriesPerPage) {
+                        hasMoreMemories = false;
+                        noMoreMemoriesEl.classList.remove('hidden');
+                    } else {
+                        noMoreMemoriesEl.classList.add('hidden');
+                    }
+
+                } catch (error) {
+                    console.error("Error al cargar recuerdos:", error);
+                    mostrarMensajeGlobal('Error al cargar recuerdos. Intenta de nuevo más tarde.', 'error', globalGalleryMessageEl);
+                    hasMoreMemories = false;
+                } finally {
+                    isLoading = false;
+                    loaderEl.classList.add('hidden');
+                }
+            }
+
+            // Observer para el "infinite scroll"
+            const loaderObserver = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting && !isLoading && hasMoreMemories) {
+                    cargarRecuerdosDeAPI();
+                }
+            }, { threshold: 1.0 });
+
+            // Función para inicializar la página de fotos
+            async function inicializarPaginaFotos() {
+                // Resetear estado de paginación
+                currentPage = 0;
+                isLoading = false;
+                hasMoreMemories = true;
+                allMemories = []; // Limpiar array de recuerdos
+                galleryContainer.innerHTML = ''; // Limpiar elementos anteriores
+                loaderEl.classList.add('hidden');
+                noMoreMemoriesEl.classList.add('hidden');
+                noMemoriesYetEl.classList.add('hidden');
+                mostrarMensajeGlobal('', '', globalGalleryMessageEl); // Limpiar mensajes
+
+                // Cargar la configuración del diario activo
+                await inicializarPaginaConDiarioActivo({
+                    elementosComunes: {
+                        globalMessageEl: globalGalleryMessageEl,
+                        nombreDiarioActualEl: document.getElementById('nombre-diario-actual'),
+                        diarioActivoInfoEl: document.getElementById('diario-activo-info'),
+                        tituloPrincipalEl: document.getElementById('nombre-app-titulo')
+                    },
+                    callbackConConfig: (configDiario) => {
+                        if (configDiario && configDiario.id) {
+                            currentActiveDiarioId = configDiario.id;
+                            // Iniciar la carga de recuerdos después de obtener el diario activo
+                            cargarRecuerdosDeAPI();
+                        } else {
+                            mostrarMensajeGlobal('No se ha seleccionado un diario activo. Por favor, selecciona uno en la página de inicio o crea uno nuevo.', 'error', globalGalleryMessageEl);
+                            hasMoreMemories = false; // No hay diario, no hay más recuerdos que cargar
+                            noMemoriesYetEl.classList.remove('hidden'); // Mostrar mensaje de "no hay recuerdos"
+                        }
+                    }
+                });
+            }
+
+            // --- Funciones del Fullscreen Modal ---
+            function abrirFullscreenModal(recuerdoId) {
+                const index = allMemories.findIndex(m => m.id == recuerdoId);
+                if (index !== -1) {
+                    currentMemoryIndex = index;
+                    mostrarRecuerdoFullscreen(allMemories[currentMemoryIndex]);
+                    fullscreenModal.style.display = 'flex';
+                }
+            }
+
+            function cerrarFullscreenModal() {
+                fullscreenModal.style.display = 'none';
+                fsImage.style.display = 'none';
+                fsVideo.style.display = 'none';
+                fsVideo.pause(); // Pausar video al cerrar
+                clearInterval(slideshowInterval); // Detener slideshow
+                btnFsPlay.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-play"><polygon points="5 3 19 12 5 21 5 3"/></svg>'; // Resetear icono a play
+            }
+
+            function mostrarRecuerdoFullscreen(recuerdo) {
+                fsImage.style.display = 'none';
+                fsVideo.style.display = 'none';
+                fsVideo.pause(); // Pausar cualquier video anterior
+
+                if (recuerdo.tipo === 'foto') {
+                    fsImage.src = recuerdo.url;
+                    fsImage.style.display = 'block';
+                } else { // video
+                    fsVideo.src = recuerdo.url;
+                    fsVideo.style.display = 'block';
+                    fsVideo.load(); // Cargar el video
+                }
+                fsDate.textContent = recuerdo.fecha;
+                fsDescription.textContent = recuerdo.descripcion || 'Sin descripción.';
+
+                // Deshabilitar botones de navegación si no hay más elementos
+                btnFsPrev.disabled = currentMemoryIndex === 0;
+                btnFsNext.disabled = currentMemoryIndex === allMemories.length - 1;
+            }
+
+            function showNextMemory() {
+                if (currentMemoryIndex < allMemories.length - 1) {
+                    currentMemoryIndex++;
+                    mostrarRecuerdoFullscreen(allMemories[currentMemoryIndex]);
+                } else {
+                    // Si llega al final en slideshow, reiniciar o detener
+                    if (slideshowInterval) {
+                        clearInterval(slideshowInterval);
+                        slideshowInterval = null;
+                        btnFsPlay.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-play"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+                    }
+                }
+            }
+
+            function showPrevMemory() {
+                if (currentMemoryIndex > 0) {
+                    currentMemoryIndex--;
+                    mostrarRecuerdoFullscreen(allMemories[currentMemoryIndex]);
+                }
+            }
+
+            function toggleSlideshow() {
+                if (slideshowInterval) {
+                    clearInterval(slideshowInterval);
+                    slideshowInterval = null;
+                    btnFsPlay.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-play"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+                    fsVideo.pause(); // Pausar video si estaba reproduciéndose
+                } else {
+                    // Asegurarse de que el video actual no se reproduzca automáticamente en el slideshow
+                    if (fsVideo.style.display === 'block') {
+                        fsVideo.pause();
+                    }
+                    slideshowInterval = setInterval(showNextMemory, 5000); // Cambiar cada 5 segundos
+                    btnFsPlay.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pause"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+                }
+            }
+
+            function toggleVerdaderoFullscreen() {
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                } else {
+                    fullscreenModal.requestFullscreen();
+                }
+            }
+
+            // --- Event Listeners ---
+            function configurarEventosUI() {
+                btnAddMemory.addEventListener('click', abrirModalNuevoRecuerdo);
+                closeModalRecuerdoBtn.addEventListener('click', cerrarModalRecuerdo);
+                cancelRecuerdoBtn.addEventListener('click', cerrarModalRecuerdo);
+
+                // Manejo de la subida de archivo y Cropper.js
+                recuerdoFileInput.addEventListener('change', (event) => {
+                    const file = event.target.files[0];
+                    if (file && file.type.startsWith('image/')) { // Solo para imágenes
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            imageToCrop.src = e.target.result;
+                            imageCropperContainer.style.display = 'block';
+                            btnCropImage.style.display = 'block'; // Mostrar botón de recortar
+
+                            if (cropper) {
+                                cropper.destroy();
+                            }
+                            cropper = new Cropper(imageToCrop, {
+                                aspectRatio: 1, // Puedes ajustar esto si quieres otras proporciones
+                                viewMode: 1, // Restringe el área de recorte al tamaño del contenedor
+                            });
+                        };
+                        reader.readAsDataURL(file);
+                    } else if (file && file.type.startsWith('video/')) {
+                        imageCropperContainer.style.display = 'none'; // Ocultar cropper para videos
+                        btnCropImage.style.display = 'none'; // Ocultar botón de recortar para videos
+                    } else {
+                        imageCropperContainer.style.display = 'none';
+                        btnCropImage.style.display = 'none';
+                        if (cropper) {
+                            cropper.destroy();
+                            cropper = null;
+                        }
+                    }
+                });
+
+                btnCropImage.addEventListener('click', () => {
+                    if (cropper) {
+                        cropper.getCroppedCanvas().toBlob((blob) => {
+                            const croppedFile = new File([blob], "cropped_image.png", { type: "image/png" });
+                            recuerdoFileInput.croppedFile = croppedFile;
+                            
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                                imageToCrop.src = e.target.result;
+                                cropper.destroy();
+                                cropper = null;
+                                btnCropImage.style.display = 'none';
+                            };
+                            reader.readAsDataURL(croppedFile);
+                            mostrarMensajeGlobal('Imagen recortada. Pulsa Guardar Recuerdo para subirla.', 'exito', globalGalleryMessageEl, 3000);
+                        }, 'image/png');
+                    }
+                });
+
+
+                formRecuerdo.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const isEditing = recuerdoIdInput.value !== '';
+                    const url = isEditing ? `/api/recuerdos/${recuerdoIdInput.value}` : '/api/recuerdos';
+                    const method = isEditing ? 'PUT' : 'POST';
+
+                    const formData = new FormData();
+                    formData.append('diario_id', currentActiveDiarioId);
+                    formData.append('fecha', recuerdoDateInput.value);
+                    formData.append('descripcion', recuerdoDescriptionInput.value.trim());
+                    formData.append('favorito', recuerdoFavoritoInput.checked ? '1' : '0');
+
+                    if (!isEditing && (recuerdoFileInput.files[0] || recuerdoFileInput.croppedFile)) {
+                        const fileToUpload = recuerdoFileInput.croppedFile || recuerdoFileInput.files[0];
+                        formData.append('media', fileToUpload);
+                    } else if (isEditing && recuerdoFileInput.croppedFile) {
+                        formData.append('media', recuerdoFileInput.croppedFile);
+                    } else if (isEditing && recuerdoFileInput.files[0]) {
+                        formData.append('media', recuerdoFileInput.files[0]);
+                    }
+
+                    try {
+                        const response = await fetchAPI(url, method, formData, true); // isFormData = true
+                        mostrarMensajeGlobal(response.message, 'exito', globalGalleryMessageEl, 3000);
+                        cerrarModalRecuerdo();
+                        await inicializarPaginaFotos(); // Recargar la galería
+                    } catch (error) {
+                        console.error('Error al guardar recuerdo:', error);
+                        mostrarMensajeGlobal(error.message || 'Error al guardar recuerdo.', 'error', globalGalleryMessageEl);
+                    }
+                });
+
+                // Fullscreen modal event listeners
+                btnFsClose.addEventListener('click', cerrarFullscreenModal);
+                btnFsNext.addEventListener('click', showNextMemory);
+                btnFsPrev.addEventListener('click', showPrevMemory);
+                btnFsPlay.addEventListener('click', toggleSlideshow);
+                btnFsFullscreen.addEventListener('click', toggleVerdaderoFullscreen);
+
+                // Keyboard navigation for fullscreen modal
+                document.addEventListener('keydown', (e) => {
+                    if (fullscreenModal.style.display === 'flex') {
+                        switch (e.key) {
+                            case 'ArrowRight': if (!btnFsNext.disabled) btnFsNext.click(); break;
+                            case 'ArrowLeft': if (!btnFsPrev.disabled) btnFsPrev.click(); break;
+                            case ' ': e.preventDefault(); toggleSlideshow(); break;
+                            case 'f': case 'F': e.preventDefault(); toggleVerdaderoFullscreen(); break;
+                            case 'Escape': cerrarFullscreenModal(); break;
+                        }
+                    } else if (e.key === 'Escape') {
+                        if (modalNuevoRecuerdo && modalNuevoRecuerdo.style.display === 'flex') cerrarModalRecuerdo();
+                    }
+                });
+
+                // Observer para el infinite scroll
+                if (loaderEl) {
+                    loaderObserver.observe(loaderEl);
+                }
+
+                btnLogout.addEventListener('click', cerrarSesion);
+
+                // Eventos para filtros
+                applyFiltersBtn.addEventListener('click', () => cargarRecuerdosDeAPI(true)); // Pasar true para resetear
+                clearFiltersBtn.addEventListener('click', () => {
+                    searchQueryInput.value = '';
+                    filterTypeSelect.value = '';
+                    filterFavoriteSelect.value = '';
+                    cargarRecuerdosDeAPI(true); // Resetear y recargar
+                });
+
+                // Escuchar cambios en el diario activo
+                window.addEventListener('activeDiarioChanged', async (event) => {
+                    console.log('Fotos.html: Diario activo cambiado a:', event.detail.diarioId);
+                    mostrarMensajeGlobal('Cargando recuerdos del nuevo diario...', 'carga', globalGalleryMessageEl);
+                    await inicializarPaginaFotos(); // Recargar todo con el nuevo contexto del diario
+                    mostrarMensajeGlobal('', '', globalGalleryMessageEl);
+                });
+
+                galleryContainer.addEventListener('contextmenu', async (e) => {
+                    e.preventDefault(); // Prevenir el menú contextual predeterminado del navegador
+                    const item = e.target.closest('.gallery-item');
+                    if (item) {
+                        const recuerdoId = item.dataset.id;
+                        const menu = document.createElement('div');
+                        menu.style.position = 'absolute';
+                        menu.style.left = `${e.clientX}px`;
+                        menu.style.top = `${e.clientY}px`;
+                        menu.style.backgroundColor = 'white';
+                        menu.style.border = '1px solid #ccc';
+                        menu.style.borderRadius = '5px';
+                        menu.style.boxShadow = '2px 2px 5px rgba(0,0,0,0.2)';
+                        menu.style.zIndex = '10000';
+                        menu.style.padding = '5px 0';
+                        menu.style.minWidth = '120px';
+                        menu.style.fontFamily = 'var(--fuente-principal)';
+                        menu.style.fontSize = '0.9em';
+
+                        const editOption = document.createElement('div');
+                        editOption.textContent = 'Editar';
+                        editOption.style.padding = '8px 15px';
+                        editOption.style.cursor = 'pointer';
+                        editOption.style.color = 'var(--color-texto)';
+                        editOption.style.transition = 'background-color 0.2s';
+                        editOption.onmouseover = () => editOption.style.backgroundColor = 'var(--color-secundario)';
+                        editOption.onmouseout = () => editOption.style.backgroundColor = 'transparent';
+                        editOption.onclick = () => {
+                            abrirModalEditarRecuerdo(recuerdoId);
+                            menu.remove();
+                        };
+                        menu.appendChild(editOption);
+
+                        const deleteOption = document.createElement('div');
+                        deleteOption.textContent = 'Eliminar';
+                        deleteOption.style.padding = '8px 15px';
+                        deleteOption.style.cursor = 'pointer';
+                        deleteOption.style.color = 'var(--color-error)';
+                        deleteOption.style.transition = 'background-color 0.2s';
+                        deleteOption.onmouseover = () => deleteOption.style.backgroundColor = 'rgba(255, 0, 0, 0.1)';
+                        deleteOption.onmouseout = () => deleteOption.style.backgroundColor = 'transparent';
+                        deleteOption.onclick = async () => {
+                            // Reemplazar confirm() con un modal personalizado
+                            const confirmDelete = await new Promise(resolve => {
+                                const confirmModal = document.createElement('div');
+                                confirmModal.classList.add('modal');
+                                confirmModal.style.display = 'flex'; // Mostrar modal
+                                confirmModal.innerHTML = `
+                                    <div class="modal-content">
+                                        <h2>Confirmar Eliminación</h2>
+                                        <p>¿Estás seguro de que quieres eliminar este recuerdo? Esta acción es irreversible.</p>
+                                        <div class="modal-buttons">
+                                            <button class="btn btn-secundario" id="confirm-cancel">Cancelar</button>
+                                            <button class="btn btn-error" id="confirm-delete">Eliminar</button>
+                                        </div>
+                                    </div>
+                                `;
+                                document.body.appendChild(confirmModal);
+
+                                document.getElementById('confirm-cancel').onclick = () => {
+                                    confirmModal.remove();
+                                    resolve(false);
+                                };
+                                document.getElementById('confirm-delete').onclick = () => {
+                                    confirmModal.remove();
+                                    resolve(true);
+                                };
+                            });
+
+                            if (confirmDelete) {
+                                try {
+                                    const response = await fetchAPI(`/api/recuerdos/${recuerdoId}?diario_id=${currentActiveDiarioId}`, 'DELETE');
+                                    mostrarMensajeGlobal(response.message, 'exito', globalGalleryMessageEl, 3000);
+                                    await inicializarPaginaFotos(); // Recargar la galería
+                                } catch (error) {
+                                    console.error('Error al eliminar recuerdo:', error);
+                                    mostrarMensajeGlobal(error.message || 'Error al eliminar recuerdo.', 'error', globalGalleryMessageEl);
+                                }
+                            }
+                            menu.remove();
+                        };
+                        menu.appendChild(deleteOption);
+
+                        document.body.appendChild(menu);
+
+                        // Cerrar menú al hacer clic fuera
+                        const closeMenu = (e) => {
+                            if (!menu.contains(e.target)) {
+                                menu.remove();
+                                document.removeEventListener('click', closeMenu);
+                            }
+                        };
+                        setTimeout(() => { // Pequeño retraso para evitar que el mismo click que abre lo cierre
+                            document.addEventListener('click', closeMenu);
+                        }, 100);
+                    }
+                });
+            }
+
+            // --- INICIALIZACIÓN ---
+            configurarEventosUI(); // Configurar listeners generales de la UI
+            await inicializarPaginaFotos(); // Carga inicial de datos y configuración de UI
+        });
+    </script>
+</body>
+</html>

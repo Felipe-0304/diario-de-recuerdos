@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="es" id="html-theme">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario - Mi Pequeño Tesoro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Comic+Neue:wght@400;700&family=Roboto:wght@400;700&family=Open+Sans:wght@400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/main.css">
+    <!-- SCRIPTS MOVED TO HEAD WITH DEFER -->
+    <script src="/js/utils.js" defer></script>
+    <script src="/js/theme-manager.js" defer></script>
+    <style>
+        :root {
+            /* Variables consistentes con configuracion.html */
+            --color-primario: #FFB6C1;
+            --color-secundario: #FFD1DC;
+            --color-accento: #FFD700;
+            --color-texto: #5D3B45;
+            --color-texto-claro: #A78B94;
+            --color-fondo: #FFF9FB;
+            --color-tarjetas: #FFFFFF;
+            --color-bordes: #F0D6DE;
+            --color-error: #ff6b6b;
+            --color-exito: #28a745;
+            --fuente-principal: 'Comic Neue', cursive;
+            --tamano-fuente: 16px;
+            
+            /* Colores para tipos de eventos */
+            --color-evento-alimentacion: #ADD8E6; /* Azul claro */
+            --color-evento-sueno: #90EE90; /* Verde claro */
+            --color-evento-panal: #FFD700; /* Oro */
+            --color-evento-hito: #FFB6C1; /* Rosa claro */
+            --color-evento-vacuna: #DA70D6; /* Orquídea */
+            --color-evento-control: #FFA07A; /* Salmón claro */
+            --color-evento-general: #D3D3D3; /* Gris claro */
+        }
+
+        body {
+            font-family: var(--fuente-principal);
+            background-color: var(--color-fondo);
+            color: var(--color-texto);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: var(--color-tarjetas);
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--color-bordes);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: var(--fuente-titulo);
+            color: var(--color-primario);
+            margin: 0;
+            font-size: 2.2em;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primario {
+            background-color: var(--color-primario);
+            color: white;
+        }
+
+        .btn-primario:hover {
+            background-color: #FF8BA6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secundario {
+            background-color: var(--color-secundario);
+            color: var(--color-texto);
+        }
+
+        .btn-secundario:hover {
+            background-color: #FFC0CB;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-icono {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: var(--color-texto);
+            padding: 5px;
+            border-radius: 50%;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-icono:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--color-texto);
+            font-weight: bold;
+            padding: 8px 15px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        nav ul li a:hover,
+        nav ul li a.active {
+            background-color: var(--color-primario);
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .calendar-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background-color: var(--color-secundario);
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .calendar-nav h2 {
+            margin: 0;
+            color: var(--color-texto);
+            font-size: 1.5em;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            text-align: center;
+        }
+
+        .calendar-grid .day-name {
+            font-weight: bold;
+            color: var(--color-primario);
+            padding: 10px 5px;
+            background-color: var(--color-bordes);
+            border-radius: 5px;
+        }
+
+        .calendar-day {
+            background-color: var(--color-fondo);
+            padding: 10px 5px;
+            border-radius: 8px;
+            min-height: 100px; /* Ajusta la altura mínima para los días */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid var(--color-bordes);
+            position: relative;
+            overflow: hidden; /* Para manejar el desbordamiento de eventos */
+        }
+
+        .calendar-day.current-month {
+            background-color: var(--color-tarjetas);
+        }
+
+        .calendar-day.other-month {
+            background-color: #F8F8F8;
+            color: var(--color-texto-claro);
+        }
+
+        .calendar-day.today {
+            border: 2px solid var(--color-primario);
+            box-shadow: 0 0 8px rgba(255, 182, 193, 0.5);
+        }
+
+        .day-number {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--color-texto);
+            margin-bottom: 5px;
+        }
+
+        .event-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin: 2px;
+            display: inline-block;
+            background-color: var(--color-primario); /* Color por defecto */
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .event-dot:hover {
+            transform: scale(1.3);
+        }
+
+        /* Colores específicos para los puntos de evento */
+        .event-dot.alimentacion { background-color: var(--color-evento-alimentacion); }
+        .event-dot.sueno { background-color: var(--color-evento-sueno); }
+        .event-dot.cambio_panal { background-color: var(--color-evento-panal); }
+        .event-dot.hito { background-color: var(--color-evento-hito); }
+        .event-dot.vacuna { background-color: var(--color-evento-vacuna); }
+        .event-dot.control_medico { background-color: var(--color-evento-control); }
+        .event-dot.general { background-color: var(--color-evento-general); }
+
+        .event-list-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .event-list-modal-content {
+            background-color: var(--color-tarjetas);
+            padding: 30px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .event-list-modal-content h2 {
+            color: var(--color-primario);
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+            font-family: var(--fuente-titulo);
+        }
+
+        .event-list-modal-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .event-list-modal-content li {
+            background-color: var(--color-fondo);
+            border: 1px solid var(--color-bordes);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            position: relative;
+        }
+
+        .event-list-modal-content li strong {
+            color: var(--color-texto);
+            font-size: 1.1em;
+        }
+
+        .event-list-modal-content li span {
+            font-size: 0.9em;
+            color: var(--color-texto-claro);
+        }
+
+        .event-list-modal-content .event-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: flex-end;
+        }
+
+        .event-list-modal-content .event-actions .btn-small {
+            padding: 5px 10px;
+            font-size: 0.8em;
+            border-radius: 5px;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.8em;
+            cursor: pointer;
+            color: var(--color-texto-claro);
+            transition: color 0.3s ease;
+        }
+
+        .modal-close-btn:hover {
+            color: var(--color-primario);
+        }
+
+        /* Modal para Añadir/Editar Evento */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .modal-content {
+            background-color: var(--color-tarjetas);
+            padding: 30px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-content h2 {
+            color: var(--color-primario);
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+            font-family: var(--fuente-titulo);
+        }
+
+        .modal-content label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--color-texto);
+        }
+
+        .modal-content input[type="date"],
+        .modal-content input[type="time"],
+        .modal-content input[type="text"],
+        .modal-content input[type="number"],
+        .modal-content select,
+        .modal-content textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid var(--color-bordes);
+            border-radius: 8px;
+            font-family: var(--fuente-principal);
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+
+        .modal-content textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-content .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+
+        .modal-content .checkbox-container input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .modal-content .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-content .modal-buttons .btn {
+            min-width: 100px;
+        }
+
+        /* Mensajes de estado */
+        .mensaje {
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .mensaje.carga {
+            background-color: #e0f7fa;
+            color: #00796b;
+        }
+        .mensaje.error {
+            background-color: var(--color-error);
+            color: white;
+        }
+        .mensaje.exito {
+            background-color: var(--color-exito);
+            color: white;
+        }
+        .mensaje.vacio {
+            background-color: #fff3e0;
+            color: #e65100;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            border-top: 1px solid var(--color-bordes);
+            color: var(--color-texto-claro);
+            font-size: 0.9em;
+        }
+
+        /* Filters container for calendario.html */
+        .filters-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: var(--color-secundario);
+            border-radius: 10px;
+            align-items: flex-end;
+            transition: all 0.3s ease-in-out;
+            overflow: hidden; /* Para la animación de colapsado */
+            max-height: 300px; /* Altura máxima para la transición */
+        }
+        .filters-container.hidden {
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            margin-top: 0;
+            margin-bottom: 0;
+            opacity: 0;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: var(--color-texto);
+            font-size: 0.9em;
+        }
+
+        .filters-container input[type="text"],
+        .filters-container select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--color-bordes);
+            border-radius: 5px;
+            font-family: var(--fuente-principal);
+            font-size: 0.9em;
+            box-sizing: border-box;
+            background-color: var(--color-tarjetas);
+            color: var(--color-texto);
+        }
+
+        .filters-container button {
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            margin-top: 10px; /* Para alinear con los inputs */
+        }
+        
+        .toggle-filters-btn-container {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .calendar-nav {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .calendar-nav h2 {
+                font-size: 1.3em;
+            }
+            .calendar-grid {
+                gap: 3px;
+            }
+            .calendar-day {
+                min-height: 80px;
+                padding: 5px;
+            }
+            .day-number {
+                font-size: 1em;
+            }
+            .event-dot {
+                width: 6px;
+                height: 6px;
+                margin: 1px;
+            }
+            .event-list-modal-content {
+                max-width: 95%;
+                padding: 20px;
+            }
+            .filters-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .filter-group {
+                min-width: unset;
+                width: 100%;
+            }
+            .filters-container button {
+                width: 100%;
+                margin-top: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <button id="btn-back" class="btn-icono" title="Volver a Inicio" onclick="window.history.back()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+            </button>
+            <h1 id="nombre-app-titulo">✨ Mi Pequeño Tesoro</h1>
+            <button id="btn-logout" class="btn-icono" title="Cerrar Sesión">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+            </button>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="fotos.html">Fotos y Videos</a></li>
+                <li><a href="calendario.html" class="active">Calendario</a></li>
+                <li><a href="linea-tiempo.html">Línea de Tiempo</a></li>
+                <li><a href="configuracion.html">Configuración</a></li>
+            </ul>
+        </nav>
+
+        <div id="global-calendar-message" class="mensaje"></div>
+        <div class="diario-activo-info" id="diario-activo-info" style="display:none;">
+            Diario actual: <strong id="nombre-diario-actual"></strong>
+        </div>
+        
+        <!-- Botón para mostrar/ocultar filtros -->
+        <div class="toggle-filters-btn-container">
+            <button id="toggle-filters-btn" class="btn btn-secundario">
+                Mostrar Filtros <span id="filter-toggle-icon">▼</span>
+            </button>
+        </div>
+
+        <!-- Controles de Búsqueda y Filtros para Calendario -->
+        <div class="filters-container hidden" id="filters-container">
+            <div class="filter-group">
+                <label for="search-query-calendario">Buscar:</label>
+                <input type="text" id="search-query-calendario" placeholder="Descripción o notas...">
+            </div>
+            <div class="filter-group">
+                <label for="filter-type-calendario">Tipo de Evento:</label>
+                <select id="filter-type-calendario">
+                    <option value="">Todos</option>
+                    <option value="alimentacion">Alimentación</option>
+                    <option value="sueno">Sueño</option>
+                    <option value="cambio_panal">Cambio de Pañal</option>
+                    <option value="hito">Hito</option>
+                    <option value="vacuna">Vacuna</option>
+                    <option value="control_medico">Control Médico</option>
+                    <option value="general">General</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filter-favorite-calendario">Favorito:</label>
+                <select id="filter-favorite-calendario">
+                    <option value="">Todos</option>
+                    <option value="1">Sí</option>
+                </select>
+            </div>
+            <button id="apply-filters-calendario" class="btn btn-primario">Aplicar Filtros</button>
+            <button id="clear-filters-calendario" class="btn btn-secundario">Limpiar Filtros</button>
+        </div>
+
+        <div class="calendar-nav">
+            <button id="prev-month" class="btn-icono">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+            </button>
+            <h2 id="current-month-year"></h2>
+            <button id="next-month" class="btn-icono">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right"><path d="m12 5 7 7-7 7"/><path d="M5 12h14"/></svg>
+            </button>
+        </div>
+
+        <div id="calendar-grid" class="calendar-grid">
+            <!-- Day names -->
+            <div class="day-name">Dom</div>
+            <div class="day-name">Lun</div>
+            <div class="day-name">Mar</div>
+            <div class="day-name">Mié</div>
+            <div class="day-name">Jue</div>
+            <div class="day-name">Vie</div>
+            <div class="day-name">Sáb</div>
+            <!-- Days will be populated by JavaScript -->
+        </div>
+
+        <!-- Modal para ver eventos del día -->
+        <div id="event-list-modal" class="event-list-modal">
+            <div class="event-list-modal-content">
+                <button class="modal-close-btn" id="close-event-list-modal">✖</button>
+                <h2 id="event-list-date"></h2>
+                <ul id="events-for-day">
+                    <!-- Eventos se cargarán aquí -->
+                </ul>
+                <div class="modal-buttons">
+                    <button class="btn btn-primario" id="btn-add-event-from-modal">Añadir Evento</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para Añadir/Editar Evento -->
+        <div id="modal-evento" class="modal">
+            <div class="modal-content">
+                <button class="modal-close-btn" id="close-modal-evento">✖</button>
+                <h2 id="modal-evento-title">Añadir Nuevo Evento</h2>
+                <form id="form-evento">
+                    <input type="hidden" id="event-id">
+                    <label for="event-date">Fecha:</label>
+                    <input type="date" id="event-date" required>
+
+                    <label for="event-time">Hora:</label>
+                    <input type="time" id="event-time" required>
+
+                    <label for="event-type">Tipo de Evento:</label>
+                    <select id="event-type" required>
+                        <option value="">Selecciona un tipo</option>
+                        <option value="alimentacion">Alimentación</option>
+                        <option value="sueno">Sueño</option>
+                        <option value="cambio_panal">Cambio de Pañal</option>
+                        <option value="hito">Hito</option>
+                        <option value="vacuna">Vacuna</option>
+                        <option value="control_medico">Control Médico</option>
+                        <option value="general">General</option>
+                    </select>
+
+                    <div id="cantidad-unidad-group" style="display: none;">
+                        <label for="event-cantidad">Cantidad:</label>
+                        <input type="number" id="event-cantidad" step="0.1">
+                        <label for="event-unidad">Unidad:</label>
+                        <input type="text" id="event-unidad" placeholder="ej. ml, min, kg, cm">
+                    </div>
+
+                    <label for="event-description">Descripción:</label>
+                    <textarea id="event-description" placeholder="Detalles del evento..."></textarea>
+
+                    <label for="event-notes">Notas Adicionales:</label>
+                    <textarea id="event-notes" placeholder="Cualquier nota extra..."></textarea>
+
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="event-favorito">
+                        <label for="event-favorito">Marcar como favorito</label>
+                    </div>
+
+                    <div class="modal-buttons">
+                        <button type="button" class="btn btn-secundario" id="cancel-event">Cancelar</button>
+                        <button type="submit" class="btn btn-primario" id="save-event">Guardar Evento</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; <span id="current-year"></span> Mi Pequeño Tesoro. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const calendarGrid = document.getElementById('calendar-grid');
+            const currentMonthYearEl = document.getElementById('current-month-year');
+            const prevMonthBtn = document.getElementById('prev-month');
+            const nextMonthBtn = document.getElementById('next-month');
+            const globalCalendarMessageEl = document.getElementById('global-calendar-message');
+            const btnLogout = document.getElementById('btn-logout');
+
+            // Elementos de filtro
+            const filtersContainer = document.getElementById('filters-container');
+            const toggleFiltersBtn = document.getElementById('toggle-filters-btn');
+            const filterToggleIcon = document.getElementById('filter-toggle-icon');
+            const searchQueryInput = document.getElementById('search-query-calendario');
+            const filterTypeSelect = document.getElementById('filter-type-calendario');
+            const filterFavoriteSelect = document.getElementById('filter-favorite-calendario');
+            const applyFiltersBtn = document.getElementById('apply-filters-calendario');
+            const clearFiltersBtn = document.getElementById('clear-filters-calendario');
+
+            // Modales de Eventos
+            const eventListModal = document.getElementById('event-list-modal');
+            const closeEventListModalBtn = document.getElementById('close-event-list-modal');
+            const eventListDateEl = document.getElementById('event-list-date');
+            const eventsForDayUl = document.getElementById('events-for-day');
+            const btnAddEventFromModal = document.getElementById('btn-add-event-from-modal');
+
+            const modalEvento = document.getElementById('modal-evento');
+            const closeModalEventoBtn = document.getElementById('close-modal-evento');
+            const formEvento = document.getElementById('form-evento');
+            const eventIdInput = document.getElementById('event-id');
+            const eventDateInput = document.getElementById('event-date');
+            const eventTimeInput = document.getElementById('event-time');
+            const eventTypeSelect = document.getElementById('event-type');
+            const eventDescriptionInput = document.getElementById('event-description');
+            const eventCantidadInput = document.getElementById('event-cantidad');
+            const eventUnidadInput = document.getElementById('event-unidad');
+            const eventNotesInput = document.getElementById('event-notes');
+            const eventFavoritoInput = document.getElementById('event-favorito');
+            const modalEventoTitle = document.getElementById('modal-evento-title');
+            const cantidadUnidadGroup = document.getElementById('cantidad-unidad-group');
+            const cancelEventBtn = document.getElementById('cancel-event');
+
+            let currentMonth = new Date().getMonth();
+            let currentYear = new Date().getFullYear();
+            let eventosGlobal = []; // Almacena todos los eventos cargados para el mes actual (filtrados)
+            let currentActiveDiarioId = null;
+
+            // Función para obtener el color del punto de evento
+            function getEventTypeColorClass(type) {
+                switch (type) {
+                    case 'alimentacion': return 'alimentacion';
+                    case 'sueno': return 'sueno';
+                    case 'cambio_panal': return 'panal';
+                    case 'hito': return 'hito';
+                    case 'vacuna': return 'vacuna';
+                    case 'control_medico': return 'control_medico';
+                    case 'general': return 'general';
+                    default: return '';
+                }
+            }
+
+            // Función para renderizar el calendario
+            function renderCalendar() {
+                calendarGrid.querySelectorAll('.calendar-day').forEach(day => day.remove()); // Limpiar días anteriores
+
+                const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+                const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+                const daysInMonth = lastDayOfMonth.getDate();
+                const firstDayOfWeek = firstDayOfMonth.getDay(); // 0 = Domingo, 6 = Sábado
+
+                currentMonthYearEl.textContent = `${firstDayOfMonth.toLocaleString('es-ES', { month: 'long', year: 'numeric' })}`;
+
+                // Días del mes anterior para rellenar el inicio
+                const prevMonthLastDay = new Date(currentYear, currentMonth, 0).getDate();
+                for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+                    const dayEl = document.createElement('div');
+                    dayEl.classList.add('calendar-day', 'other-month');
+                    dayEl.innerHTML = `<span class="day-number">${prevMonthLastDay - i}</span>`;
+                    calendarGrid.appendChild(dayEl);
+                }
+
+                // Días del mes actual
+                for (let i = 1; i <= daysInMonth; i++) {
+                    const dayEl = document.createElement('div');
+                    dayEl.classList.add('calendar-day', 'current-month');
+                    dayEl.innerHTML = `<span class="day-number">${i}</span>`;
+                    
+                    const currentDate = new Date(currentYear, currentMonth, i);
+                    if (currentDate.toDateString() === new Date().toDateString()) {
+                        dayEl.classList.add('today');
+                    }
+
+                    const formattedDate = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                    const eventsForThisDay = eventosGlobal.filter(evento => evento.fecha === formattedDate);
+
+                    if (eventsForThisDay.length > 0) {
+                        const dotsContainer = document.createElement('div');
+                        dotsContainer.classList.add('event-dots-container');
+                        eventsForThisDay.forEach(event => {
+                            const dot = document.createElement('span');
+                            dot.classList.add('event-dot', getEventTypeColorClass(event.tipo));
+                            dot.title = `${event.hora} - ${event.descripcion || event.tipo}`;
+                            dotsContainer.appendChild(dot);
+                        });
+                        dayEl.appendChild(dotsContainer);
+                        dayEl.addEventListener('click', () => openEventListModal(formattedDate, eventsForThisDay));
+                    } else {
+                        // Si no hay eventos, permitir añadir uno directamente
+                        dayEl.addEventListener('click', () => abrirModalNuevoEvento(formattedDate));
+                    }
+
+                    calendarGrid.appendChild(dayEl);
+                }
+
+                // Días del mes siguiente para rellenar el final
+                const totalDaysDisplayed = firstDayOfWeek + daysInMonth;
+                const remainingDays = 42 - totalDaysDisplayed; // Asegura 6 semanas completas (6 * 7 = 42)
+                for (let i = 1; i <= remainingDays; i++) {
+                    const dayEl = document.createElement('div');
+                    dayEl.classList.add('calendar-day', 'other-month');
+                    dayEl.innerHTML = `<span class="day-number">${i}</span>`;
+                    calendarGrid.appendChild(dayEl);
+                }
+            }
+
+            // Función para cargar eventos desde la API para el mes actual
+            async function cargarEventosParaMes(applyCurrentFilters = true) { // Cambiado el nombre del parámetro para mayor claridad
+                if (!currentActiveDiarioId) {
+                    mostrarMensajeGlobal('No se ha seleccionado un diario activo.', 'error', globalCalendarMessageEl);
+                    return;
+                }
+
+                mostrarMensajeGlobal('Cargando eventos...', 'carga', globalCalendarMessageEl);
+
+                try {
+                    const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+                    const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+                    const fechaInicio = firstDayOfMonth.toISOString().split('T')[0];
+                    const fechaFin = lastDayOfMonth.toISOString().split('T')[0];
+
+                    const queryParams = new URLSearchParams();
+                    queryParams.append('diario_id', currentActiveDiarioId);
+                    queryParams.append('fechaInicio', fechaInicio);
+                    queryParams.append('fechaFin', fechaFin);
+                    queryParams.append('limit', 9999); // Cargar todos los eventos del mes para el calendario
+
+                    // Aplicar filtros si applyCurrentFilters es true
+                    if (applyCurrentFilters) {
+                        const searchQuery = searchQueryInput.value.trim();
+                        if (searchQuery) queryParams.append('searchQuery', searchQuery);
+                        if (filterTypeSelect.value) queryParams.append('tipo', filterTypeSelect.value);
+                        if (filterFavoriteSelect.value) queryParams.append('favorito', filterFavoriteSelect.value);
+                    } else {
+                        // Si no se aplican los filtros actuales, limpiar los inputs de filtro
+                        searchQueryInput.value = '';
+                        filterTypeSelect.value = '';
+                        filterFavoriteSelect.value = '';
+                    }
+                    
+                    const response = await fetchAPI(`/api/eventos?${queryParams.toString()}`, 'GET');
+                    eventosGlobal = response.eventos; // Guardar eventos filtrados
+                    
+                    if (eventosGlobal.length === 0) {
+                        mostrarMensajeGlobal('No hay eventos para este mes con los filtros aplicados.', 'vacio', globalCalendarMessageEl);
+                    } else {
+                        mostrarMensajeGlobal('', '', globalCalendarMessageEl); // Limpiar mensaje de carga/vacio
+                    }
+                    renderCalendar(); // Volver a renderizar el calendario con los eventos cargados/filtrados
+
+                } catch (error) {
+                    console.error("Error al cargar eventos del calendario:", error);
+                    mostrarMensajeGlobal('Error al cargar eventos del calendario. Intenta de nuevo más tarde.', 'error', globalCalendarMessageEl);
+                }
+            }
+
+            // --- Funciones de Modales ---
+            function openEventListModal(date, events) {
+                eventListDateEl.textContent = `Eventos del ${date}`;
+                eventsForDayUl.innerHTML = ''; // Limpiar lista anterior
+
+                if (events.length === 0) {
+                    const li = document.createElement('li');
+                    li.textContent = 'No hay eventos para este día.';
+                    eventsForDayUl.appendChild(li);
+                } else {
+                    events.forEach(event => {
+                        const li = document.createElement('li');
+                        li.dataset.id = event.id; // Para editar/eliminar
+
+                        const title = document.createElement('strong');
+                        title.textContent = `${event.hora} - ${event.tipo.charAt(0).toUpperCase() + event.tipo.slice(1).replace('_', ' ')}`;
+                        li.appendChild(title);
+
+                        if (event.descripcion) {
+                            const desc = document.createElement('span');
+                            desc.textContent = event.descripcion;
+                            li.appendChild(desc);
+                        }
+                        if (event.notas) {
+                            const notes = document.createElement('span');
+                            notes.textContent = `Notas: ${event.notas}`;
+                            li.appendChild(notes);
+                        }
+                        if (event.cantidad && event.unidad) {
+                            const qty = document.createElement('span');
+                            qty.textContent = `Cantidad: ${event.cantidad} ${event.unidad}`;
+                            li.appendChild(qty);
+                        }
+                        if (event.favorito === 1) {
+                            const fav = document.createElement('span');
+                            fav.textContent = '⭐ Favorito';
+                            fav.style.color = 'gold';
+                            li.appendChild(fav);
+                        }
+
+                        const actionsDiv = document.createElement('div');
+                        actionsDiv.classList.add('event-actions');
+
+                        const editBtn = document.createElement('button');
+                        editBtn.classList.add('btn', 'btn-secundario', 'btn-small', 'btn-editar');
+                        editBtn.textContent = 'Editar';
+                        editBtn.onclick = (e) => {
+                            e.stopPropagation(); // Evitar que el click se propague al li
+                            closeEventListModal();
+                            abrirModalEditarEvento(event);
+                        };
+                        actionsDiv.appendChild(editBtn);
+
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.classList.add('btn', 'btn-primario', 'btn-small', 'btn-eliminar');
+                        deleteBtn.textContent = 'Eliminar';
+                        deleteBtn.onclick = (e) => {
+                            e.stopPropagation(); // Evitar que el click se propague al li
+                            manejarEliminarEvento(event.id);
+                        };
+                        actionsDiv.appendChild(deleteBtn);
+
+                        li.appendChild(actionsDiv);
+                        eventsForDayUl.appendChild(li);
+                    });
+                }
+                eventListModal.style.display = 'flex';
+                // Al hacer clic en "Añadir Evento" desde este modal, pre-rellenar la fecha
+                btnAddEventFromModal.onclick = () => {
+                    closeEventListModal();
+                    // Obtener la fecha del título del modal para pre-rellenar
+                    const dateFromTitle = eventListDateEl.textContent.replace('Eventos del ', '');
+                    abrirModalNuevoEvento(dateFromTitle);
+                };
+            }
+
+            function closeEventListModal() {
+                eventListModal.style.display = 'none';
+            }
+
+            function abrirModalNuevoEvento(date = '') {
+                modalEventoTitle.textContent = 'Añadir Nuevo Evento';
+                formEvento.reset();
+                eventIdInput.value = '';
+                eventDateInput.value = date; // Pre-rellenar la fecha si se pasa
+                eventTypeSelect.value = ''; // Resetear tipo
+                cantidadUnidadGroup.style.display = 'none'; // Ocultar por defecto
+                modalEvento.style.display = 'flex';
+            }
+
+            async function abrirModalEditarEvento(evento) {
+                modalEventoTitle.textContent = 'Editar Evento';
+                eventIdInput.value = evento.id;
+                eventDateInput.value = evento.fecha;
+                eventTimeInput.value = evento.hora;
+                eventTypeSelect.value = evento.tipo;
+                eventDescriptionInput.value = evento.descripcion || '';
+                eventCantidadInput.value = evento.cantidad || '';
+                eventUnidadInput.value = evento.unidad || '';
+                eventNotesInput.value = evento.notas || '';
+                eventFavoritoInput.checked = evento.favorito === 1;
+
+                // Mostrar/ocultar campos de cantidad/unidad según el tipo
+                if (['alimentacion', 'sueno'].includes(eventTypeSelect.value)) {
+                    cantidadUnidadGroup.style.display = 'block';
+                } else {
+                    cantidadUnidadGroup.style.display = 'none';
+                }
+                modalEvento.style.display = 'flex';
+            }
+
+            function cerrarModalEvento() {
+                modalEvento.style.display = 'none';
+                formEvento.reset(); // Limpiar formulario
+            }
+
+            async function manejarEliminarEvento(eventoId) {
+                // Reemplazar confirm() con un modal personalizado
+                const confirmDelete = await new Promise(resolve => {
+                    const confirmModal = document.createElement('div');
+                    confirmModal.classList.add('modal');
+                    confirmModal.style.display = 'flex'; // Mostrar modal
+                    confirmModal.innerHTML = `
+                        <div class="modal-content">
+                            <h2>Confirmar Eliminación</h2>
+                            <p>¿Estás seguro de que quieres eliminar este evento? Esta acción es irreversible.</p>
+                            <div class="modal-buttons">
+                                <button class="btn btn-secundario" id="confirm-cancel">Cancelar</button>
+                                <button class="btn btn-error" id="confirm-delete">Eliminar</button>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(confirmModal);
+
+                    document.getElementById('confirm-cancel').onclick = () => {
+                        confirmModal.remove();
+                        resolve(false);
+                    };
+                    document.getElementById('confirm-delete').onclick = () => {
+                        confirmModal.remove();
+                        resolve(true);
+                    };
+                });
+
+                if (confirmDelete) {
+                    try {
+                        const response = await fetchAPI(`/api/eventos/${eventoId}?diario_id=${currentActiveDiarioId}`, 'DELETE');
+                        mostrarMensajeGlobal(response.message, 'exito', globalCalendarMessageEl, 3000);
+                        closeEventListModal(); // Cerrar modal de lista de eventos si está abierto
+                        await cargarEventosParaMes(true); // Recargar eventos del mes
+                    } catch (error) {
+                        console.error('Error al eliminar evento:', error);
+                        mostrarMensajeGlobal(error.message || 'Error al eliminar evento.', 'error', globalCalendarMessageEl);
+                    }
+                }
+            }
+
+
+            // --- Inicialización de la página ---
+            async function inicializarPaginaCalendario() {
+                // Resetear estado y limpiar UI
+                currentMonth = new Date().getMonth();
+                currentYear = new Date().getFullYear();
+                eventosGlobal = [];
+                mostrarMensajeGlobal('', '', globalCalendarMessageEl); // Limpiar mensajes
+
+                // La función inicializarPaginaConDiarioActivo debería estar disponible ahora
+                // ya que utils.js se carga con defer en el head.
+                await inicializarPaginaConDiarioActivo({
+                    elementosComunes: {
+                        globalMessageEl: globalCalendarMessageEl,
+                        nombreDiarioActualEl: document.getElementById('nombre-diario-actual'),
+                        diarioActivoInfoEl: document.getElementById('diario-activo-info'),
+                        tituloPrincipalEl: document.getElementById('nombre-app-titulo')
+                    },
+                    callbackConConfig: (configDiario) => {
+                        if (configDiario && configDiario.id) {
+                            currentActiveDiarioId = configDiario.id;
+                            // Cargar eventos para el mes actual del diario activo, aplicando los filtros actuales
+                            cargarEventosParaMes(true); 
+                        } else {
+                            mostrarMensajeGlobal('No se ha seleccionado un diario activo. Por favor, selecciona uno en la página de inicio o crea uno nuevo.', 'error', globalCalendarMessageEl);
+                        }
+                    }
+                });
+            }
+
+            // --- Configuración de Event Listeners ---
+            function configurarEventListeners() {
+                prevMonthBtn.addEventListener('click', () => {
+                    currentMonth--;
+                    if (currentMonth < 0) {
+                        currentMonth = 11;
+                        currentYear--;
+                    }
+                    cargarEventosParaMes(true); // Mantener filtros al cambiar de mes
+                });
+
+                nextMonthBtn.addEventListener('click', () => {
+                    currentMonth++;
+                    if (currentMonth > 11) {
+                        currentMonth = 0;
+                        currentYear++;
+                    }
+                    cargarEventosParaMes(true); // Mantener filtros al cambiar de mes
+                });
+
+                closeEventListModalBtn.addEventListener('click', closeEventListModal);
+                closeModalEventoBtn.addEventListener('click', cerrarModalEvento);
+                cancelEventBtn.addEventListener('click', cerrarModalEvento);
+
+                // Mostrar/ocultar campos de cantidad/unidad
+                eventTypeSelect.addEventListener('change', () => {
+                    if (['alimentacion', 'sueno'].includes(eventTypeSelect.value)) {
+                        cantidadUnidadGroup.style.display = 'block';
+                    } else {
+                        cantidadUnidadGroup.style.display = 'none';
+                        eventCantidadInput.value = ''; // Limpiar si se oculta
+                        eventUnidadInput.value = ''; // Limpiar si se oculta
+                    }
+                });
+
+                formEvento.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const isEditing = eventIdInput.value !== '';
+                    const url = isEditing ? `/api/eventos/${eventIdInput.value}` : '/api/eventos';
+                    const method = isEditing ? 'PUT' : 'POST';
+
+                    const payload = {
+                        diario_id: currentActiveDiarioId,
+                        fecha: eventDateInput.value,
+                        hora: eventTimeInput.value,
+                        tipo: eventTypeSelect.value,
+                        descripcion: eventDescriptionInput.value.trim(),
+                        notas: eventNotesInput.value.trim(),
+                        favorito: eventFavoritoInput.checked ? 1 : 0
+                    };
+
+                    if (['alimentacion', 'sueno'].includes(eventTypeSelect.value)) {
+                        payload.cantidad = parseFloat(eventCantidadInput.value) || null;
+                        payload.unidad = eventUnidadInput.value.trim() || null;
+                    }
+
+                    try {
+                        const response = await fetchAPI(url, method, payload);
+                        mostrarMensajeGlobal(response.message, 'exito', globalCalendarMessageEl, 3000);
+                        cerrarModalEvento();
+                        await cargarEventosParaMes(true); // Recargar eventos del mes manteniendo filtros
+                    } catch (error) {
+                        console.error('Error al guardar evento:', error);
+                        mostrarMensajeGlobal(error.message || 'Error al guardar evento.', 'error', globalCalendarMessageEl);
+                    }
+                });
+
+                // Eventos para filtros
+                applyFiltersBtn.addEventListener('click', () => cargarEventosParaMes(true)); // Aplicar filtros actuales
+                clearFiltersBtn.addEventListener('click', () => {
+                    cargarEventosParaMes(false); // Limpiar inputs y recargar sin filtros
+                });
+
+                // Toggle de filtros
+                toggleFiltersBtn.addEventListener('click', () => {
+                    filtersContainer.classList.toggle('hidden');
+                    if (filtersContainer.classList.contains('hidden')) {
+                        filterToggleIcon.textContent = '▼';
+                        toggleFiltersBtn.innerHTML = 'Mostrar Filtros <span id="filter-toggle-icon">▼</span>';
+                    } else {
+                        filterToggleIcon.textContent = '▲';
+                        toggleFiltersBtn.innerHTML = 'Ocultar Filtros <span id="filter-toggle-icon">▲</span>';
+                    }
+                });
+
+
+                // Escuchar cambios en el diario activo
+                window.addEventListener('activeDiarioChanged', async (event) => {
+                    console.log('Calendario.html: Diario activo cambiado a:', event.detail.diarioId);
+                    mostrarMensajeGlobal('Cargando calendario del nuevo diario...', 'carga', globalCalendarMessageEl);
+                    await inicializarPaginaCalendario(); // Recargar todo con el nuevo contexto del diario
+                    mostrarMensajeGlobal('', '', globalCalendarMessageEl);
+                });
+
+                // Cerrar modales al hacer clic fuera
+                eventListModal?.addEventListener('click', (e) => {
+                    if (e.target === eventListModal) {
+                        closeEventListModal();
+                    }
+                });
+                modalEvento?.addEventListener('click', (e) => {
+                    if (e.target === modalEvento) {
+                        cerrarModalEvento();
+                    }
+                });
+                
+                btnLogout?.addEventListener('click', cerrarSesion);
+            }
+
+            // --- Arranque de la página ---
+            configurarEventListeners();
+            await inicializarPaginaCalendario();
+        });
+    </script>
+</body>
+</html>

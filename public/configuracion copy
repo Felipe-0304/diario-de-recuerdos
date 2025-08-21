@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="es" id="html-theme">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración - Mi Pequeño Tesoro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Comic+Neue:wght@400;700&family=Roboto:wght@400;700&family=Open+Sans:wght@400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/main.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --color-primario: #FFB6C1;
+            --color-secundario: #FFD1DC;
+            --color-accento: #FFD700;
+            --color-texto: #5D3B45;
+            --color-texto-claro: #A78B94;
+            --color-fondo: #FFF9FB;
+            --color-tarjetas: #FFFFFF;
+            --color-bordes: #F0D6DE;
+            --color-error: #ff6b6b;
+            --color-exito: #28a745;
+            --fuente-principal: 'Comic Neue', cursive;
+            --tamano-fuente: 16px;
+        }
+
+        body {
+            font-family: var(--fuente-principal);
+            background-color: var(--color-fondo);
+            color: var(--color-texto);
+            margin: 0; padding: 0; line-height: 1.6;
+            font-size: var(--tamano-fuente);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        header { text-align: center; margin-bottom: 30px; position: relative; }
+        h1#titulo-principal-config { font-family: 'Pacifico', cursive; color: var(--color-primario); font-size: 2.5rem; margin-bottom: 20px; }
+
+        .configuracion-seccion {
+            background-color: var(--color-tarjetas); padding: 25px;
+            border-radius: 15px; margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--color-bordes);
+            transition: all 0.3s ease;
+        }
+        .configuracion-seccion h2 { font-family: 'Pacifico', cursive; color: var(--color-primario); margin-top: 0; text-align: center; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; }
+        .form-control {
+            width: 100%; padding: 12px; border: 1px solid var(--color-bordes);
+            border-radius: 10px; font-family: inherit;
+            background-color: var(--color-fondo); color: var(--color-texto);
+            transition: all 0.3s; box-sizing: border-box;
+        }
+        .form-control:focus {
+            outline: none; border-color: var(--color-primario);
+            box-shadow: 0 0 0 2px var(--color-secundario);
+        }
+        .form-control-color {
+            height: 50px; padding: 5px; cursor: pointer; width: 100%;
+            -webkit-appearance: none; -moz-appearance: none; appearance: none;
+            background: none; border: 1px solid var(--color-bordes);
+        }
+        .form-control-color::-webkit-color-swatch-wrapper { padding: 0; }
+        .form-control-color::-webkit-color-swatch { border: none; border-radius: 8px; }
+        .form-control-color::-moz-color-swatch { border: none; border-radius: 8px; }
+
+        .opciones-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; margin-top: 10px; }
+        .opcion {
+            display: flex; flex-direction: column; align-items: center; cursor: pointer;
+            padding: 10px; border-radius: 10px; transition: all 0.3s;
+            border: 2px solid transparent; background-color: var(--color-fondo);
+        }
+        .opcion:hover { transform: translateY(-3px); box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1); border-color: var(--color-secundario); }
+        .opcion.selected {
+            border-color: var(--color-primario); background-color: var(--color-secundario);
+            transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .preview {
+            width: 60px; height: 60px; border-radius: 50%; margin-bottom: 8px;
+            border: 3px solid var(--color-bordes); transition: all 0.3s;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; background-color: white;
+        }
+        .configuracion-acciones { display: flex; justify-content: space-between; margin-top: 30px; gap: 15px; flex-wrap: wrap; }
+        .btn {
+            padding: 12px 25px; border: none; border-radius: 25px;
+            font-family: inherit; font-weight: bold; cursor: pointer;
+            transition: all 0.3s; flex-grow: 1; min-width: 180px;
+        }
+        .btn-primario { background-color: var(--color-primario); color: white; }
+        .btn-primario:hover { opacity: 0.8; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+        .btn-secundario { background-color: var(--color-texto-claro); color: white; }
+        .btn-secundario:hover { background-color: var(--color-texto); transform: translateY(-2px); }
+        .btn-pequeno { padding: 6px 12px; font-size: 0.85rem; border-radius: 15px; margin-left: 5px;}
+
+
+        #btn-logout {
+            position: absolute; top: 20px; right: 20px; background: none; border: none;
+            cursor: pointer; font-size: 1.5rem; color: var(--color-primario); transition: all 0.3s;
+        }
+        #btn-logout:hover { transform: scale(1.1); }
+
+        #preview-area {
+            background-color: var(--color-tarjetas); padding: 20px; border-radius: 10px;
+            margin-top: 20px; border: 1px solid var(--color-bordes); text-align: center;
+        }
+        #preview-text { margin: 0; font-family: var(--fuente-principal); font-size: var(--tamano-fuente); color: var(--color-texto); }
+
+        .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid var(--color-bordes); flex-wrap: wrap;}
+        .tab {
+            padding: 10px 15px; cursor: pointer; font-weight: bold;
+            border-radius: 5px 5px 0 0; transition: all 0.3s;
+            margin-right: 5px; margin-bottom: -2px; 
+            color: var(--color-texto-claro); white-space: nowrap;
+        }
+        .tab:hover { background-color: var(--color-secundario); color: var(--color-texto); }
+        .tab.active { background-color: var(--color-primario); color: white; border-bottom: 2px solid var(--color-primario); }
+
+        .config-section { display: none; }
+        .config-section.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        #foto-bebe-container { text-align: center; margin: 20px 0; }
+        #foto-bebe-preview {
+            width: 150px; height: 150px; border-radius: 50%; object-fit: cover;
+            border: 3px solid var(--color-primario); margin-bottom: 10px; background-color: #eee;
+        }
+
+        .seguridad-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid var(--color-bordes); flex-wrap: wrap; gap:10px;}
+        .seguridad-item:last-child { border-bottom: none; }
+        .seguridad-info { flex: 1; min-width: 200px;}
+        .seguridad-info h3 { margin: 0 0 5px 0; color: var(--color-texto); }
+        .seguridad-info p { margin: 0; color: var(--color-texto-claro); font-size: 0.9rem; }
+        
+        .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc; transition: .4s; border-radius: 28px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 20px; width: 20px;
+            left: 4px; bottom: 4px; background-color: white;
+            transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--color-primario); }
+        input:focus + .slider { box-shadow: 0 0 1px var(--color-primario); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        footer { text-align: center; margin-top: 50px; color: var(--color-texto-claro); font-size: 0.9rem; }
+              
+        #image-to-crop-container {
+            width: 100%;
+            height: 300px; 
+            overflow: hidden;
+            margin-bottom: 15px;
+            background-color: #f0f0f0; 
+        }
+        #image-to-crop {
+            display: block;
+            max-width: 100%; 
+        }
+        .diario-activo-config-info {
+            text-align: center;
+            margin-bottom: 15px;
+            padding: 8px;
+            background-color: var(--color-secundario);
+            color: var(--color-texto);
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+        .diario-activo-config-info strong {
+            color: var(--color-primario);
+        }
+        .lista-diarios { list-style: none; padding: 0; }
+        .lista-diarios li {
+            padding: 12px 15px; margin-bottom: 8px; border-radius: 8px;
+            background-color: var(--color-fondo); border: 1px solid var(--color-bordes);
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; transition: background-color 0.3s, border-color 0.3s;
+        }
+        .lista-diarios li:hover { background-color: var(--color-secundario); border-color: var(--color-primario); }
+        .lista-diarios li.active-diario-item {
+            background-color: var(--color-primario); color: white; border-color: var(--color-primario);
+            font-weight: bold;
+        }
+        .lista-diarios li.active-diario-item .diario-rol { color: white; opacity: 0.8;}
+        .diario-nombre { flex-grow: 1; }
+        .diario-rol { font-size: 0.8em; color: var(--color-texto-claro); margin-left: 10px; }
+        
+        /* Estilos para la lista de usuarios compartidos mejorada */
+        .shared-users-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            border-bottom: 1px dashed var(--color-bordes);
+            background-color: var(--color-fondo);
+            border-radius: 6px;
+            margin-bottom: 6px;
+        }
+        .shared-users-list li:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .user-info-share {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .user-name-share {
+            font-weight: bold;
+            color: var(--color-texto);
+        }
+        .user-email-share {
+            font-size: 0.8em;
+            color: var(--color-texto-claro);
+        }
+        .user-actions-share {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .select-user-role-share.form-control {
+            padding: 6px 10px !important;
+            font-size: 0.85rem !important;
+            height: auto !important;
+            width: auto !important;
+            min-width: 100px;
+            display: inline-block !important;
+            margin-right: 8px !important;
+            border-radius: 6px !important;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1 id="titulo-principal-config">⚙️ Configuración</h1>
+            <button id="btn-logout" title="Cerrar sesión">👋</button>
+            <nav>
+                <ul>
+                    <li><a href="index.html">🏠 Inicio</a></li>
+                    <li><a href="fotos.html">📷 Fotos</a></li>
+                    <li><a href="calendario.html">📅 Calendario</a></li>
+                    <li><a href="linea-tiempo.html">⏳ Línea de Tiempo</a></li>
+                    <li><a href="configuracion.html" class="active">⚙️ Configuración</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <div id="global-config-message" class="mensaje" style="display:none;"></div>
+        
+        <div class="diario-activo-config-info" id="diario-activo-config-info" style="display:none;">
+            Configurando el diario: <strong id="nombre-diario-actual-config">Cargando...</strong>
+        </div>
+
+
+        <div class="tabs">
+            <div class="tab active" data-tab="mis-diarios">📚 Mis Diarios y Acceso</div>
+            <div class="tab" data-tab="apariencia">🎨 Apariencia del Diario</div>
+            <div class="tab" data-tab="perfil">👶 Perfil del Bebé (Diario)</div>
+            <div class="tab" data-tab="seguridad">🔒 Seguridad de Cuenta</div>
+        </div>
+
+        <div id="mis-diarios" class="config-section active">
+            <div class="configuracion-seccion">
+                <h2>Mis Diarios</h2>
+                <p>Selecciona un diario de la lista para ver o editar su configuración y gestionar el acceso compartido. El diario activo se resaltará.</p>
+                <ul id="lista-mis-diarios" class="lista-diarios">
+                    <p class="mensaje mensaje-carga">Cargando tus diarios...</p>
+                </ul>
+                <button id="btn-crear-nuevo-diario-modal" class="btn btn-primario" style="margin-top: 20px;">+ Crear Nuevo Diario</button>
+            </div>
+
+            <div id="gestion-compartir-seccion" class="configuracion-seccion" style="display:none;">
+                <h2>Compartir Diario: <span id="nombre-diario-para-compartir"></span></h2>
+                <div id="compartir-message" class="mensaje" style="display:none;"></div>
+                <form id="form-invitar-usuario" novalidate>
+                    <div class="form-group">
+                        <label for="email-invitado">Email del usuario a invitar:</label>
+                        <input type="email" id="email-invitado" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="rol-invitado">Asignar rol:</label>
+                        <select id="rol-invitado" class="form-control">
+                            <option value="viewer">Lector (Solo ver)</option>
+                            <option value="editor">Editor (Ver y añadir/editar recuerdos)</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primario">Invitar Usuario</button>
+                </form>
+                <h3 style="margin-top: 30px;">Usuarios con Acceso:</h3>
+                <ul id="lista-usuarios-compartidos" class="shared-users-list">
+                    <!-- Los usuarios con acceso se cargarán aquí -->
+                </ul>
+            </div>
+        </div>
+
+
+        <div id="apariencia" class="config-section">
+            <div class="configuracion-seccion">
+                <h2>Personalización del Diario Activo</h2>
+                
+                <div class="form-group">
+                    <label for="nombre-diario-personalizado">Nombre del Diario (Personalizado):</label>
+                    <input type="text" id="nombre-diario-personalizado" class="form-control" placeholder="Ej: El Tesoro de Lucas">
+                </div>
+
+                <div class="form-group">
+                    <label for="mensaje-bienvenida">Mensaje de Bienvenida (Página de Inicio del Diario):</label>
+                    <input type="text" id="mensaje-bienvenida" class="form-control" placeholder="Ej: ¡Bienvenido/a! Aquí tienes un resumen de los tesoros de {nombreBebe}.">
+                    <small>Usa "{nombreBebe}" para insertar el nombre principal del bebé de este diario.</small>
+                </div>
+                
+                <div class="form-group"> <label for="color-primario">Color Principal:</label> <input type="color" id="color-primario" class="form-control form-control-color" value="#FFB6C1"> </div>
+                <div class="form-group"> <label for="color-secundario">Color Secundario:</label> <input type="color" id="color-secundario" class="form-control form-control-color" value="#FFD1DC"> </div>
+                <div class="form-group"> <label for="color-accento">Color de Acento:</label> <input type="color" id="color-accento" class="form-control form-control-color" value="#FFD700"> </div>
+                <div class="form-group"> <label for="color-fondo">Color de Fondo:</label> <input type="color" id="color-fondo" class="form-control form-control-color" value="#FFF9FB"> </div>
+                <div class="form-group"> <label for="color-tarjetas">Color de Tarjetas/Contenedores:</label> <input type="color" id="color-tarjetas" class="form-control form-control-color" value="#FFFFFF"> </div>
+                <div class="form-group"> <label for="color-texto">Color de Texto Principal:</label> <input type="color" id="color-texto" class="form-control form-control-color" value="#5D3B45"> </div>
+                <div class="form-group"> <label for="color-texto-claro">Color de Texto Secundario:</label> <input type="color" id="color-texto-claro" class="form-control form-control-color" value="#A78B94"> </div>
+                <div class="form-group"> <label for="color-bordes">Color de Bordes:</label> <input type="color" id="color-bordes" class="form-control form-control-color" value="#F0D6DE"> </div>
+            </div>
+            
+            <div class="configuracion-seccion">
+                <h2>Tipografía del Diario Activo</h2>
+                <div class="form-group">
+                    <label>Fuente Principal:</label>
+                    <div class="opciones-container" id="fuentes-container">
+                        <!-- Las opciones de fuente se cargarán aquí con JS -->
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="tamano-fuente">Tamaño de Fuente Base:</label>
+                    <select id="tamano-fuente" class="form-control">
+                        <!-- Las opciones de tamaño se cargarán aquí con JS -->
+                    </select>
+                </div>
+                <div id="preview-area">
+                    <p id="preview-text">Esta es una previsualización de cómo se verá tu texto.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="perfil" class="config-section">
+            <div class="configuracion-seccion">
+                <h2>Información del Bebé (Diario Activo)</h2>
+                <div id="foto-bebe-container">
+                    <img id="foto-bebe-preview" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDE1MCAxNTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiNhYWEiPlNpbiBmb3RvPC90ZXh0Pjwvc3ZnPg==" alt="Foto del bebé">
+                    <input type="file" id="foto-bebe-input" accept="image/*" style="display: none;">
+                    <button id="btn-cambiar-foto" class="btn btn-secundario" style="margin-top: 10px; padding: 8px 15px;">Cambiar Foto</button>
+                </div>
+                <div class="form-group"> <label for="nombre-bebe-completo">Nombre completo del bebé:</label> <input type="text" id="nombre-bebe-completo" class="form-control" placeholder="Ej: Lucas Martínez Pérez"> </div>
+                <div class="form-group"> <label for="fecha-nacimiento">Fecha de nacimiento:</label> <input type="date" id="fecha-nacimiento" class="form-control"> </div>
+                <div class="form-group"> <label for="hora-nacimiento">Hora de nacimiento (opcional):</label> <input type="time" id="hora-nacimiento" class="form-control"> </div>
+                <div class="form-group"> <label for="lugar-nacimiento">Lugar de nacimiento (opcional):</label> <input type="text" id="lugar-nacimiento" class="form-control" placeholder="Ej: Hospital Central, Madrid"> </div>
+                <div class="form-group"> <label for="peso-nacimiento">Peso al nacer (kg, opcional):</label> <input type="number" id="peso-nacimiento" class="form-control" step="0.01" min="0" placeholder="3.25"> </div>
+                <div class="form-group"> <label for="estatura-nacimiento">Estatura al nacer (cm, opcional):</label> <input type="number" id="estatura-nacimiento" class="form-control" min="0" placeholder="50"> </div>
+                <div class="form-group"> <label for="grupo-sanguineo">Grupo sanguíneo (opcional):</label> <select id="grupo-sanguineo" class="form-control"> <option value="">Seleccionar</option> <option value="A+">A+</option> <option value="A-">A-</option> <option value="B+">B+</option> <option value="B-">B-</option> <option value="AB+">AB+</option> <option value="AB-">AB-</option> <option value="O+">O+</option> <option value="O-">O-</option> <option value="Desconocido">Desconocido</option></select> </div>
+            </div>
+            <div class="configuracion-seccion">
+                <h2>Información Adicional (Opcional - Diario Activo)</h2>
+                <div class="form-group"> <label for="nombre-padres">Nombres de los padres/tutores:</label> <input type="text" id="nombre-padres" class="form-control" placeholder="Ej: María y Juan"> </div>
+                <div class="form-group"> <label for="intereses">Intereses o características especiales del bebé:</label> <textarea id="intereses" class="form-control" rows="3" placeholder="Ej: Le encanta la música, tiene un lunar en el hombro derecho..."></textarea> </div>
+            </div>
+        </div>
+
+        <div id="seguridad" class="config-section">
+            <div class="configuracion-seccion">
+                <h2>Configuración de Seguridad de la Cuenta</h2>
+                <div class="seguridad-item">
+                    <div class="seguridad-info"> <h3>Contraseña</h3> <p>Cambia tu contraseña regularmente</p> </div>
+                    <button class="btn btn-primario" id="btn-cambiar-contrasena">Cambiar Contraseña</button>
+                </div>
+                <div class="seguridad-item">
+                    <div class="seguridad-info"> <h3>Autenticación de dos factores (2FA)</h3> <p>Añade una capa extra de seguridad (No implementado)</p> </div>
+                    <div> <label class="switch"> <input type="checkbox" id="toggle-dos-factores" disabled> <span class="slider round"></span> </label> </div>
+                </div>
+                <div class="seguridad-item">
+                    <div class="seguridad-info"> <h3>Exportar mis datos</h3> <p>Descarga una copia de todos tus diarios y datos asociados.</p> </div>
+                    <button class="btn btn-primario" id="btn-exportar-datos">Exportar Mis Datos</button>
+                </div>
+                <div class="seguridad-item">
+                    <div class="seguridad-info">
+                        <h3>Importar datos</h3>
+                        <p>Sube un archivo de exportación (.json) para restaurar tus datos. <strong>Advertencia:</strong> Esto creará nuevos diarios en tu cuenta basados en el archivo; no reemplazará diarios existentes con el mismo nombre.</p>
+                    </div>
+                    <input type="file" id="import-file-input" accept=".json" style="display: none;">
+                    <button class="btn btn-secundario" id="btn-importar-datos">Importar Desde Archivo</button>
+                </div>
+                <div class="seguridad-item">
+                    <div class="seguridad-info"> <h3>Eliminar cuenta</h3> <p>Elimina permanentemente tu cuenta y todos tus diarios (acción irreversible)</p> </div>
+                    <button class="btn btn-secundario" id="btn-eliminar-cuenta" style="background-color: var(--color-error);">Eliminar Mi Cuenta</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="configuracion-acciones">
+            <button id="btn-restaurar-config-diario" class="btn btn-secundario">Restaurar Predeterminados (Diario Activo)</button>
+            <button id="btn-guardar-config-diario" class="btn btn-primario">Guardar Cambios (Diario Activo)</button>
+        </div>
+
+        <!-- Modal para Cropper -->
+        <div id="modal-cropper" class="modal" style="display:none; z-index: 1050;"> <div class="modal-contenido" style="max-width: 600px;"> <h2>Ajustar Foto del Bebé</h2>
+                <div id="image-to-crop-container">
+                    <img id="image-to-crop" src="#" alt="Previsualización para recortar">
+                </div>
+                <div class="form-actions" style="margin-top: 15px;">
+                    <button type="button" id="btn-cancelar-crop" class="btn btn-secundario">Cancelar</button>
+                    <button type="button" id="btn-aplicar-crop" class="btn btn-primario">Aplicar Recorte</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para Crear Nuevo Diario -->
+        <div id="modal-crear-diario" class="modal" style="display:none; z-index: 1040;">
+            <div class="modal-contenido">
+                <h2>Crear Nuevo Diario</h2>
+                <div id="crear-diario-message" class="mensaje" style="display:none;"></div>
+                <form id="form-crear-diario" novalidate>
+                    <div class="form-group">
+                        <label for="nombre-bebe-nuevo-diario">Nombre principal del bebé para este diario:</label>
+                        <input type="text" id="nombre-bebe-nuevo-diario" class="form-control" required placeholder="Ej: Pequeño Leo">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" id="btn-cancelar-crear-diario" class="btn btn-secundario">Cancelar</button>
+                        <button type="submit" class="btn btn-primario">Crear Diario</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+            <footer>
+            <p>Con todo el amor del mundo - Diario de Mi Bebé © <span id="current-year"></span></p>
+        </footer>
+    </div>
+
+    <script src="/js/theme-manager.js" defer></script>
+    <script src="/js/utils.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script>
+        // getActiveDiarioId, setActiveDiarioId, fetchAPI, cerrarSesion, mostrarMensajeGlobal, etc. vienen de utils.js
+        document.addEventListener('DOMContentLoaded', async function() {
+            // --- ELEMENTOS DEL DOM ---
+            const globalConfigMessageEl = document.getElementById('global-config-message');
+            const btnLogout = document.getElementById('btn-logout');
+            const fotoPreview = document.getElementById('foto-bebe-preview');
+            const fotoInput = document.getElementById('foto-bebe-input');
+            const btnCambiarFoto = document.getElementById('btn-cambiar-foto');
+            const tituloPrincipalConfigEl = document.getElementById('titulo-principal-config');
+            const diarioActivoConfigInfoEl = document.getElementById('diario-activo-config-info');
+            const nombreDiarioActualConfigEl = document.getElementById('nombre-diario-actual-config');
+
+            // Modal Cropper
+            const modalCropper = document.getElementById('modal-cropper');
+            const imageToCropEl = document.getElementById('image-to-crop');
+            const btnAplicarCrop = document.getElementById('btn-aplicar-crop');
+            const btnCancelarCrop = document.getElementById('btn-cancelar-crop');
+
+            // Pestañas y Secciones
+            const tabs = document.querySelectorAll('.tabs .tab');
+            const sections = document.querySelectorAll('.config-section');
+            
+            // Pestaña "Mis Diarios y Acceso"
+            const listaMisDiariosEl = document.getElementById('lista-mis-diarios');
+            const btnCrearNuevoDiarioModalEl = document.getElementById('btn-crear-nuevo-diario-modal');
+            const modalCrearDiario = document.getElementById('modal-crear-diario');
+            const formCrearDiario = document.getElementById('form-crear-diario');
+            const nombreBebeNuevoDiarioInput = document.getElementById('nombre-bebe-nuevo-diario');
+            const btnCancelarCrearDiario = document.getElementById('btn-cancelar-crear-diario');
+            const crearDiarioMessageEl = document.getElementById('crear-diario-message');
+            const gestionCompartirSeccionEl = document.getElementById('gestion-compartir-seccion');
+            const nombreDiarioParaCompartirEl = document.getElementById('nombre-diario-para-compartir');
+            const formInvitarUsuario = document.getElementById('form-invitar-usuario');
+            const emailInvitadoInput = document.getElementById('email-invitado');
+            const rolInvitadoSelect = document.getElementById('rol-invitado');
+            const listaUsuariosCompartidosEl = document.getElementById('lista-usuarios-compartidos');
+            const compartirMessageEl = document.getElementById('compartir-message');
+
+
+            // --- ESTADO ---
+            let cropperInstance = null;
+            let configuracionActualDelDiario = { perfil_bebe: {} }; 
+            let currentActiveDiarioId = null;
+            let listaCompletaDeDiarios = []; 
+
+            const fuentesDisponibles = [
+                { nombre: "Comic Neue", valor: "'Comic Neue', cursive" },
+                { nombre: "Pacifico", valor: "'Pacifico', cursive" },
+                { nombre: "Roboto", valor: "'Roboto', sans-serif" },
+                { nombre: "Open Sans", valor: "'Open Sans', sans-serif" },
+                { nombre: "Dancing Script", valor: "'Dancing Script', cursive" }
+            ];
+            const tamanosFuenteDisponibles = ['14px', '15px', '16px', '17px', '18px', '20px', '22px'];
+            const defaultValues = {
+                nombre_diario_personalizado: 'Mi Pequeño Tesoro',
+                mensaje_bienvenida: '¡Bienvenido/a! Aquí tienes un resumen de los tesoros de tu bebé.',
+                color_primario: '#FFB6C1',
+                color_secundario: '#FFD1DC',
+                color_accento: '#FFD700',
+                color_fondo: '#FFF9FB',
+                color_tarjetas: '#FFFFFF',
+                color_texto: '#5D3B45',
+                color_texto_claro: '#A78B94',
+                color_bordes: '#F0D6DE',
+                fuente_principal: "'Comic Neue', cursive",
+                tamano_fuente: '16px',
+                perfil_bebe: {
+                    nombre_completo: '',
+                    fecha_nacimiento: '',
+                    hora_nacimiento: '',
+                    lugar_nacimiento: '',
+                    peso_nacimiento: '',
+                    estatura_nacimiento: '',
+                    grupo_sanguineo: '',
+                    foto: '',
+                    padres: '',
+                    intereses: ''
+                }
+            };
+            
+            // --- INICIALIZACIÓN DE PÁGINA ---
+            async function inicializarPaginaConfiguracion() {
+                currentActiveDiarioId = getActiveDiarioId();
+                
+                await cargarYMostrarListaDeDiarios(); 
+
+                if (!currentActiveDiarioId) { 
+                    mostrarMensajeGlobal('Por favor, selecciona un diario o crea uno nuevo para continuar.', 'info', globalConfigMessageEl);
+                    activarTab('mis-diarios');
+                    deshabilitarFormulariosConfigDiario(true);
+                    if(diarioActivoConfigInfoEl) diarioActivoConfigInfoEl.style.display = 'none';
+                    return;
+                }
+                
+                deshabilitarFormulariosConfigDiario(false);
+                await cargarConfiguracionDelDiarioActivoAPI(); 
+                actualizarInfoDiarioActivoUI();
+                await cargarUsuariosCompartidosDelDiarioActivo(); 
+            }
+
+            function deshabilitarFormulariosConfigDiario(deshabilitar) {
+                const idsSeccionesConfigDiario = ['apariencia', 'perfil']; // Secciones que dependen de un diario activo
+                idsSeccionesConfigDiario.forEach(id => {
+                    const seccion = document.getElementById(id);
+                    if (seccion) {
+                        const inputs = seccion.querySelectorAll('input, select, textarea, button');
+                        inputs.forEach(input => input.disabled = deshabilitar);
+                    }
+                });
+                const btnGuardar = document.getElementById('btn-guardar-config-diario');
+                const btnRestaurar = document.getElementById('btn-restaurar-config-diario');
+                if(btnGuardar) btnGuardar.disabled = deshabilitar;
+                if(btnRestaurar) btnRestaurar.disabled = deshabilitar;
+            }
+
+
+            // --- GESTIÓN DE DIARIOS Y ACCESO ---
+            async function cargarYMostrarListaDeDiarios() {
+                if (!listaMisDiariosEl) return;
+                listaMisDiariosEl.innerHTML = '<p class="mensaje mensaje-carga">Cargando tus diarios...</p>';
+                try {
+                    listaCompletaDeDiarios = await fetchAPI('/api/diarios');
+                    if (listaCompletaDeDiarios && listaCompletaDeDiarios.length > 0) {
+                        if (!currentActiveDiarioId || !listaCompletaDeDiarios.find(d => d.id === currentActiveDiarioId)) { 
+                            const primerOwner = listaCompletaDeDiarios.find(d => d.rol_en_diario === 'owner');
+                            currentActiveDiarioId = primerOwner ? primerOwner.id : listaCompletaDeDiarios[0].id;
+                            setActiveDiarioId(currentActiveDiarioId);
+                        }
+                        renderizarListaDiarios();
+                    } else {
+                        listaMisDiariosEl.innerHTML = '<p class="mensaje mensaje-vacio">Aún no tienes diarios. ¡Crea uno!</p>';
+                        currentActiveDiarioId = null; 
+                        setActiveDiarioId(null);
+                    }
+                } catch (error) {
+                    console.error("Error cargando lista de diarios:", error);
+                    if (error.message !== 'No autorizado') {
+                        listaMisDiariosEl.innerHTML = '<p class="mensaje mensaje-error">Error al cargar tus diarios.</p>';
+                    }
+                }
+            }
+
+            function renderizarListaDiarios() {
+                if (!listaMisDiariosEl) return;
+                listaMisDiariosEl.innerHTML = '';
+                if (!listaCompletaDeDiarios || listaCompletaDeDiarios.length === 0) {
+                    listaMisDiariosEl.innerHTML = '<p class="mensaje mensaje-vacio">Aún no tienes diarios. ¡Crea uno!</p>';
+                    return;
+                }
+                listaCompletaDeDiarios.forEach(diario => {
+                    const li = document.createElement('li');
+                    li.dataset.diarioId = diario.id;
+                    li.innerHTML = `
+                        <span class="diario-nombre">${diario.nombre_principal_bebe || `Diario ID: ${diario.id}`} (Creador: ${diario.nombre_creador})</span>
+                        <span class="diario-rol">Tu rol: ${diario.rol_en_diario}</span>
+                    `;
+                    if (diario.id === currentActiveDiarioId) {
+                        li.classList.add('active-diario-item');
+                    }
+                    li.addEventListener('click', async () => {
+                        setActiveDiarioId(diario.id);
+                        currentActiveDiarioId = diario.id;
+                        // No es necesario re-renderizar la lista aquí, solo actualizar el estado visual
+                        document.querySelectorAll('#lista-mis-diarios li').forEach(item => item.classList.remove('active-diario-item'));
+                        li.classList.add('active-diario-item');
+                        
+                        // Disparamos el evento para que otras partes de la app (incluida esta misma página) reaccionen
+                        window.dispatchEvent(new CustomEvent('activeDiarioChanged', { detail: { diarioId: currentActiveDiarioId } }));
+                        // La recarga de configuración y usuarios compartidos se hará en el listener de 'activeDiarioChanged'
+                    });
+                    listaMisDiariosEl.appendChild(li);
+                });
+            }
+
+            function abrirModalCrearDiario() {
+                if(modalCrearDiario) {
+                    if(formCrearDiario) formCrearDiario.reset();
+                    if(crearDiarioMessageEl) mostrarMensajeGlobal('', '', crearDiarioMessageEl);
+                    modalCrearDiario.style.display = 'flex';
+                    if(nombreBebeNuevoDiarioInput) nombreBebeNuevoDiarioInput.focus();
+                }
+            }
+            function cerrarModalCrearDiario() {
+                if(modalCrearDiario) modalCrearDiario.style.display = 'none';
+            }
+
+            async function manejarSubmitCrearDiario(event) {
+                event.preventDefault();
+                if (!formCrearDiario || !nombreBebeNuevoDiarioInput || !crearDiarioMessageEl) return;
+                
+                const nombreBebe = nombreBebeNuevoDiarioInput.value.trim();
+                if (!nombreBebe) {
+                    mostrarMensajeGlobal('El nombre del bebé es requerido.', 'error', crearDiarioMessageEl, 3000);
+                    return;
+                }
+                mostrarMensajeGlobal('Creando diario...', 'carga', crearDiarioMessageEl);
+                try {
+                    const nuevoDiario = await fetchAPI('/api/diarios', 'POST', { nombre_principal_bebe: nombreBebe });
+                    if (nuevoDiario && nuevoDiario.id) {
+                        setActiveDiarioId(nuevoDiario.id); 
+                        currentActiveDiarioId = nuevoDiario.id;
+                        await inicializarPaginaConfiguracion(); 
+                        cerrarModalCrearDiario();
+                        mostrarMensajeGlobal('¡Diario creado con éxito!', 'exito', globalConfigMessageEl, 3000);
+                        activarTab('apariencia'); 
+                    }
+                } catch (error) {
+                    console.error("Error creando diario:", error);
+                    mostrarMensajeGlobal(error.message || 'Error al crear el diario.', 'error', crearDiarioMessageEl, 4000);
+                }
+            }
+
+            async function cargarUsuariosCompartidosDelDiarioActivo() {
+                if (!currentActiveDiarioId || !gestionCompartirSeccionEl || !nombreDiarioParaCompartirEl || !listaUsuariosCompartidosEl || !compartirMessageEl) {
+                    if(gestionCompartirSeccionEl) gestionCompartirSeccionEl.style.display = 'none';
+                    return;
+                }
+
+                const diarioActual = listaCompletaDeDiarios.find(d => d.id === currentActiveDiarioId);
+                if (!diarioActual) {
+                    if(gestionCompartirSeccionEl) gestionCompartirSeccionEl.style.display = 'none';
+                    return;
+                }
+
+                nombreDiarioParaCompartirEl.textContent = diarioActual.nombre_principal_bebe || `Diario ID ${currentActiveDiarioId}`;
+
+                if (diarioActual.rol_en_diario !== 'owner') {
+                    gestionCompartirSeccionEl.style.display = 'none';
+                    return;
+                }
+                gestionCompartirSeccionEl.style.display = 'block';
+                mostrarMensajeGlobal('Cargando usuarios con acceso...', 'carga', compartirMessageEl);
+
+                try {
+                    const usuariosConAcceso = await fetchAPI(`/api/diarios/${currentActiveDiarioId}/shared-users`);
+                    listaUsuariosCompartidosEl.innerHTML = ''; 
+
+                    if (usuariosConAcceso && usuariosConAcceso.length === 0) {
+                        mostrarMensajeGlobal('Este diario aún no se ha compartido con otros usuarios.', 'vacio', compartirMessageEl);
+                    } else if (usuariosConAcceso) {
+                        mostrarMensajeGlobal('', '', compartirMessageEl); 
+                        usuariosConAcceso.forEach(usuario => {
+                            const li = document.createElement('li');
+                            li.dataset.userId = usuario.user_id;
+                            li.dataset.userEmail = usuario.email; 
+
+                            li.innerHTML = `
+                                <div class="user-info-share">
+                                    <span class="user-name-share">${usuario.nombre}</span>
+                                    <small class="user-email-share">(${usuario.email})</small>
+                                </div>
+                                <div class="user-actions-share">
+                                    <select class="select-user-role-share form-control">
+                                        <option value="viewer" ${usuario.rol_en_diario === 'viewer' ? 'selected' : ''}>Lector</option>
+                                        <option value="editor" ${usuario.rol_en_diario === 'editor' ? 'selected' : ''}>Editor</option>
+                                    </select>
+                                    <button class="btn btn-primario btn-pequeno btn-actualizar-rol" title="Guardar nuevo rol para este usuario">Actualizar Rol</button>
+                                    <button class="btn btn-secundario btn-pequeno btn-revocar-acceso" data-target-user-id="${usuario.user_id}" title="Revocar acceso para este usuario">Revocar</button>
+                                </div>
+                            `;
+                            listaUsuariosCompartidosEl.appendChild(li);
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error cargando usuarios compartidos:", error);
+                    mostrarMensajeGlobal('Error al cargar usuarios con acceso.', 'error', compartirMessageEl, 4000);
+                    listaUsuariosCompartidosEl.innerHTML = '<p class="mensaje mensaje-error">Error al cargar usuarios con acceso.</p>';
+                }
+            }
+            
+            async function manejarSubmitInvitarUsuario(event) {
+                event.preventDefault();
+                if (!formInvitarUsuario || !emailInvitadoInput || !rolInvitadoSelect || !compartirMessageEl || !currentActiveDiarioId) return;
+
+                const emailInvitado = emailInvitadoInput.value.trim();
+                const rolAsignado = rolInvitadoSelect.value;
+
+                if (!emailInvitado) {
+                    mostrarMensajeGlobal('El email del invitado es requerido.', 'error', compartirMessageEl, 3000);
+                    return;
+                }
+                mostrarMensajeGlobal('Invitando usuario...', 'carga', compartirMessageEl);
+                try {
+                    await fetchAPI(`/api/diarios/${currentActiveDiarioId}/share`, 'POST', {
+                        email_invitado: emailInvitado,
+                        rol_asignado: rolAsignado
+                    });
+                    mostrarMensajeGlobal('¡Usuario invitado/rol actualizado con éxito!', 'exito', compartirMessageEl, 3000);
+                    formInvitarUsuario.reset();
+                    await cargarUsuariosCompartidosDelDiarioActivo(); 
+                } catch (error) {
+                    console.error("Error invitando usuario:", error);
+                    mostrarMensajeGlobal(error.message || 'Error al invitar al usuario.', 'error', compartirMessageEl, 4000);
+                }
+            }
+
+            async function manejarRevocarAcceso(targetUserId) {
+                 if (!currentActiveDiarioId || !targetUserId || !compartirMessageEl) return;
+                 if (!confirm('¿Estás seguro de que quieres revocar el acceso a este usuario?')) return;
+
+                 mostrarMensajeGlobal('Revocando acceso...', 'carga', compartirMessageEl);
+                 try {
+                    await fetchAPI(`/api/diarios/${currentActiveDiarioId}/access/${targetUserId}`, 'DELETE');
+                    mostrarMensajeGlobal('Acceso revocado con éxito.', 'exito', compartirMessageEl, 3000);
+                    await cargarUsuariosCompartidosDelDiarioActivo(); 
+                 } catch (error) {
+                    console.error("Error revocando acceso:", error);
+                    mostrarMensajeGlobal(error.message || 'Error al revocar el acceso.', 'error', compartirMessageEl, 4000);
+                 }
+            }
+
+
+            // --- CONFIGURACIÓN DEL DIARIO ACTIVO (Apariencia, Perfil) ---
+            function popularSelectoresTipografia() {
+                const fuentesCont = document.getElementById('fuentes-container');
+                const tamanoSelect = document.getElementById('tamano-fuente');
+                if (!fuentesCont || !tamanoSelect) return;
+
+                fuentesCont.innerHTML = '';
+                fuentesDisponibles.forEach(fuente => {
+                    const opcion = document.createElement('div');
+                    opcion.className = 'opcion';
+                    opcion.dataset.fuente = fuente.valor;
+                    opcion.innerHTML = `<div class="preview" style="font-family: ${fuente.valor};">Aa</div><span>${fuente.nombre}</span>`;
+                    opcion.addEventListener('click', function() {
+                        document.querySelectorAll('#fuentes-container .opcion').forEach(o => o.classList.remove('selected'));
+                        this.classList.add('selected');
+                        aplicarCambiosVisualesLocales();
+                    });
+                    fuentesCont.appendChild(opcion);
+                });
+
+                tamanoSelect.innerHTML = '';
+                tamanosFuenteDisponibles.forEach(tamano => {
+                    const option = document.createElement('option');
+                    option.value = tamano;
+                    option.textContent = tamano;
+                    tamanoSelect.appendChild(option);
+                });
+                tamanoSelect.addEventListener('change', aplicarCambiosVisualesLocales);
+            }
+            function aplicarCambiosVisualesLocales() {
+                const previewTextEl = document.getElementById('preview-text');
+                if (!previewTextEl) return;
+                const fuenteSeleccionada = document.querySelector('#fuentes-container .opcion.selected')?.dataset.fuente || defaultValues.fuente_principal;
+                const tamanoSeleccionado = document.getElementById('tamano-fuente')?.value || defaultValues.tamano_fuente;
+                previewTextEl.style.fontFamily = fuenteSeleccionada;
+                previewTextEl.style.fontSize = tamanoSeleccionado;
+                previewTextEl.style.color = document.getElementById('color-texto')?.value || defaultValues.color_texto;
+                document.getElementById('preview-area').style.backgroundColor = document.getElementById('color-tarjetas')?.value || defaultValues.color_tarjetas;
+            }
+
+            function actualizarControlesFormularioDiario(configDelDiario) {
+                if (!configDelDiario) return;
+                configuracionActualDelDiario = JSON.parse(JSON.stringify(configDelDiario)); 
+
+                document.getElementById('nombre-diario-personalizado').value = configDelDiario.nombre_diario_personalizado || '';
+                document.getElementById('mensaje-bienvenida').value = configDelDiario.mensaje_bienvenida || '';
+                document.getElementById('color-primario').value = configDelDiario.color_primario || defaultValues.color_primario;
+                document.getElementById('color-secundario').value = configDelDiario.color_secundario || defaultValues.color_secundario;
+                document.getElementById('color-accento').value = configDelDiario.color_accento || defaultValues.color_accento;
+                document.getElementById('color-fondo').value = configDelDiario.color_fondo || defaultValues.color_fondo;
+                document.getElementById('color-tarjetas').value = configDelDiario.color_tarjetas || defaultValues.color_tarjetas;
+                document.getElementById('color-texto').value = configDelDiario.color_texto || defaultValues.color_texto;
+                document.getElementById('color-texto-claro').value = configDelDiario.color_texto_claro || defaultValues.color_texto_claro;
+                document.getElementById('color-bordes').value = configDelDiario.color_bordes || defaultValues.color_bordes;
+                
+                document.getElementById('tamano-fuente').value = configDelDiario.tamano_fuente || defaultValues.tamano_fuente;
+                document.querySelectorAll('#fuentes-container .opcion').forEach(opcion => {
+                    opcion.classList.toggle('selected', opcion.dataset.fuente === (configDelDiario.fuente_principal || defaultValues.fuente_principal));
+                });
+                
+                const perfil = configDelDiario.perfil_bebe || {};
+                document.getElementById('nombre-bebe-completo').value = perfil.nombre_completo || '';
+                document.getElementById('fecha-nacimiento').value = perfil.fecha_nacimiento || '';
+                document.getElementById('hora-nacimiento').value = perfil.hora_nacimiento || '';
+                document.getElementById('lugar-nacimiento').value = perfil.lugar_nacimiento || '';
+                document.getElementById('peso-nacimiento').value = perfil.peso_nacimiento || '';
+                document.getElementById('estatura-nacimiento').value = perfil.estatura_nacimiento || '';
+                document.getElementById('grupo-sanguineo').value = perfil.grupo_sanguineo || '';
+                document.getElementById('nombre-padres').value = perfil.padres || '';
+                document.getElementById('intereses').value = perfil.intereses || '';
+
+                if (fotoPreview) {
+                    fotoPreview.src = (perfil.foto && perfil.foto.startsWith('data:image')) ? perfil.foto : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDE1MCAxNTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiNhYWEiPlNpbiBmb3RvPC90ZXh0Pjwvc3ZnPg==';
+                }
+                if(configuracionActualDelDiario.perfil_bebe) configuracionActualDelDiario.perfil_bebe.foto = perfil.foto || ''; 
+                
+                aplicarCambiosVisualesLocales(); 
+            }
+
+            async function cargarConfiguracionDelDiarioActivoAPI() {
+                if (!currentActiveDiarioId) {
+                    console.warn("No hay diario activo para cargar configuración.");
+                    actualizarInfoDiarioActivoUI(); 
+                    deshabilitarFormulariosConfigDiario(true);
+                    return;
+                }
+                deshabilitarFormulariosConfigDiario(false);
+                mostrarMensajeGlobal('Cargando configuración del diario...', 'carga', globalConfigMessageEl);
+                try {
+                    const configServidor = await fetchAPI('/api/configuracion'); 
+                    
+                    if (configServidor && configServidor.diario_id === currentActiveDiarioId) {
+                        actualizarControlesFormularioDiario(configServidor);
+                        actualizarInfoDiarioActivoUI(configServidor.nombre_diario_personalizado || `Diario ID: ${currentActiveDiarioId}`);
+                    } else if (configServidor) {
+                        actualizarControlesFormularioDiario(configServidor); 
+                        actualizarInfoDiarioActivoUI(configServidor.nombre_diario_personalizado || `Diario ID: ${configServidor.diario_id}`);
+                    } else {
+                         throw new Error("No se recibió configuración del servidor para el diario activo.");
+                    }
+                    mostrarMensajeGlobal('', '', globalConfigMessageEl); 
+                } catch (error) {
+                    console.error('Error detallado al cargar config del diario:', error);
+                     if (error.message !== 'No autorizado') {
+                        mostrarMensajeGlobal('Error al cargar configuración del diario: ' + error.message, 'error', globalConfigMessageEl);
+                    }
+                }
+            }
+            
+            function actualizarInfoDiarioActivoUI(nombreDiario = null) {
+                if (diarioActivoConfigInfoEl && nombreDiarioActualConfigEl && tituloPrincipalConfigEl) {
+                    if (currentActiveDiarioId) {
+                        const nombreAMostrar = nombreDiario || (configuracionActualDelDiario?.nombre_diario_personalizado || `Diario ID: ${currentActiveDiarioId}`);
+                        nombreDiarioActualConfigEl.textContent = nombreAMostrar;
+                        tituloPrincipalConfigEl.textContent = `⚙️ Configuración de "${nombreAMostrar}"`;
+                        document.title = `Configuración - ${nombreAMostrar}`;
+                        diarioActivoConfigInfoEl.style.display = 'block';
+                    } else {
+                        nombreDiarioActualConfigEl.textContent = 'Ningún diario seleccionado';
+                        tituloPrincipalConfigEl.textContent = '⚙️ Configuración';
+                        document.title = 'Configuración - Mi Pequeño Tesoro';
+                        diarioActivoConfigInfoEl.style.display = 'none';
+                    }
+                }
+            }
+
+
+            async function guardarConfiguracionDelDiarioActivo() {
+                if (!currentActiveDiarioId) {
+                    mostrarMensajeGlobal('No hay un diario activo seleccionado para guardar.', 'error', globalConfigMessageEl, 3000);
+                    return;
+                }
+                mostrarMensajeGlobal('Guardando configuración del diario...', 'carga', globalConfigMessageEl);
+                const configParaGuardar = {
+                    // No enviamos diario_id aquí, el backend PUT /api/configuracion usa el de la sesión/principal
+                    nombre_diario_personalizado: document.getElementById('nombre-diario-personalizado').value,
+                    mensaje_bienvenida: document.getElementById('mensaje-bienvenida').value,
+                    color_primario: document.getElementById('color-primario').value,
+                    color_secundario: document.getElementById('color-secundario').value,
+                    color_accento: document.getElementById('color-accento').value,
+                    color_fondo: document.getElementById('color-fondo').value,
+                    color_tarjetas: document.getElementById('color-tarjetas').value,
+                    color_texto: document.getElementById('color-texto').value,
+                    color_texto_claro: document.getElementById('color-texto-claro').value,
+                    color_bordes: document.getElementById('color-bordes').value,
+                    tamano_fuente: document.getElementById('tamano-fuente').value,
+                    fuente_principal: document.querySelector('#fuentes-container .opcion.selected')?.dataset.fuente || configuracionActualDelDiario.fuente_principal,
+                    perfil_bebe: {
+                        nombre_completo: document.getElementById('nombre-bebe-completo').value,
+                        fecha_nacimiento: document.getElementById('fecha-nacimiento').value,
+                        hora_nacimiento: document.getElementById('hora-nacimiento').value,
+                        lugar_nacimiento: document.getElementById('lugar-nacimiento').value,
+                        peso_nacimiento: document.getElementById('peso-nacimiento').value,
+                        estatura_nacimiento: document.getElementById('estatura-nacimiento').value,
+                        grupo_sanguineo: document.getElementById('grupo-sanguineo').value,
+                        padres: document.getElementById('nombre-padres').value,
+                        intereses: document.getElementById('intereses').value,
+                        foto: configuracionActualDelDiario.perfil_bebe?.foto || '', 
+                    }
+                };
+
+                try {
+                    await fetchAPI('/api/configuracion', 'PUT', configParaGuardar); 
+                    configuracionActualDelDiario = JSON.parse(JSON.stringify(configParaGuardar)); 
+                    actualizarInfoDiarioActivoUI(configParaGuardar.nombre_diario_personalizado);
+                    aplicarConfiguracionVisual(configParaGuardar); 
+                    
+                    mostrarMensajeGlobal('¡Configuración del diario guardada con éxito!', 'exito', globalConfigMessageEl, 3000);
+                } catch (error) {
+                    console.error('Error al guardar configuración del diario:', error);
+                    mostrarMensajeGlobal('Error al guardar: ' + error.message, 'error', globalConfigMessageEl, 4000);
+                }
+            }
+
+            async function restaurarValoresPredeterminadosDelDiario() {
+                if (!currentActiveDiarioId) {
+                     mostrarMensajeGlobal('Selecciona un diario para restaurar sus valores.', 'error', globalConfigMessageEl, 3000); return;
+                }
+                if (confirm('¿Estás seguro? Se perderán las configuraciones actuales de ESTE DIARIO y se aplicarán los valores predeterminados.')) {
+                     const configPredeterminadaDiario = {
+                        // diario_id: currentActiveDiarioId, // No es necesario enviar, el backend usa el de sesión
+                        nombre_diario_personalizado: `Diario de ${configuracionActualDelDiario.perfil_bebe?.nombre_completo || 'Bebé'} (Restaurado)`,
+                        mensaje_bienvenida: defaultValues.mensaje_bienvenida,
+                        color_primario: defaultValues.color_primario, 
+                        color_secundario: defaultValues.color_secundario,
+                        color_accento: defaultValues.color_accento,
+                        color_fondo: defaultValues.color_fondo,
+                        color_tarjetas: defaultValues.color_tarjetas,
+                        color_texto: defaultValues.color_texto,
+                        color_texto_claro: defaultValues.color_texto_claro,
+                        color_bordes: defaultValues.color_bordes,
+                        fuente_principal: defaultValues.fuente_principal, 
+                        tamano_fuente: defaultValues.tamano_fuente,
+                        perfil_bebe: { ...defaultValues.perfil_bebe } // Copia del perfil bebé vacío o defaults
+                    };
+                    // Mantener el nombre del bebé si ya existe, pero restaurar el resto del perfil
+                    if (configuracionActualDelDiario.perfil_bebe && configuracionActualDelDiario.perfil_bebe.nombre_completo) {
+                        configPredeterminadaDiario.perfil_bebe.nombre_completo = configuracionActualDelDiario.perfil_bebe.nombre_completo;
+                    }
+
+                    try {
+                        mostrarMensajeGlobal('Restaurando valores del diario...', 'carga', globalConfigMessageEl);
+                        await fetchAPI('/api/configuracion', 'PUT', configPredeterminadaDiario);
+                        actualizarControlesFormularioDiario(configPredeterminadaDiario); 
+                        aplicarConfiguracionVisual(configPredeterminadaDiario);
+                        actualizarInfoDiarioActivoUI(configPredeterminadaDiario.nombre_diario_personalizado);
+                        mostrarMensajeGlobal('Valores del diario restaurados y guardados.', 'exito', globalConfigMessageEl, 3000);
+                    } catch (error) {
+                        console.error('Error al restaurar configuración del diario:', error);
+                        mostrarMensajeGlobal('Error al restaurar: ' + error.message, 'error', globalConfigMessageEl, 4000);
+                    }
+                }
+            }
+            
+            // --- CROPPING ---
+            function configurarFotoBebe() {
+                if (!btnCambiarFoto || !fotoInput || !modalCropper || !imageToCropEl || !btnAplicarCrop || !btnCancelarCrop || !fotoPreview) return;
+
+                btnCambiarFoto.addEventListener('click', () => fotoInput.click());
+                fotoInput.addEventListener('change', (event) => {
+                    const files = event.target.files;
+                    if (files && files.length > 0) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            imageToCropEl.src = e.target.result;
+                            modalCropper.style.display = 'flex';
+                            if (cropperInstance) cropperInstance.destroy();
+                            cropperInstance = new Cropper(imageToCropEl, {
+                                aspectRatio: 1,
+                                viewMode: 1,
+                                background: false,
+                                responsive: true,
+                                restore: false,
+                                guides: false,
+                                center: false,
+                                highlight: false,
+                                cropBoxMovable: true,
+                                cropBoxResizable: true,
+                                toggleDragModeOnDblclick: false,
+                            });
+                        };
+                        reader.readAsDataURL(files[0]);
+                    }
+                    fotoInput.value = ''; // Para permitir seleccionar el mismo archivo de nuevo
+                });
+
+                btnAplicarCrop.addEventListener('click', () => {
+                    if (cropperInstance) {
+                        const croppedCanvas = cropperInstance.getCroppedCanvas({
+                            width: 250, // Tamaño deseado para la foto de perfil
+                            height: 250,
+                            imageSmoothingQuality: 'high',
+                        });
+                        const nuevaFotoBase64 = croppedCanvas.toDataURL('image/png'); // o image/jpeg
+                        fotoPreview.src = nuevaFotoBase64;
+                        if (configuracionActualDelDiario.perfil_bebe) {
+                            configuracionActualDelDiario.perfil_bebe.foto = nuevaFotoBase64;
+                        } else {
+                            configuracionActualDelDiario.perfil_bebe = { foto: nuevaFotoBase64 };
+                        }
+                        modalCropper.style.display = 'none';
+                        cropperInstance.destroy();
+                        cropperInstance = null;
+                    }
+                });
+                btnCancelarCrop.addEventListener('click', () => {
+                    modalCropper.style.display = 'none';
+                    if (cropperInstance) {
+                        cropperInstance.destroy();
+                        cropperInstance = null;
+                    }
+                });
+                 modalCropper.addEventListener('click', (e) => { if (e.target === modalCropper) btnCancelarCrop.click(); });
+            }
+            
+            // --- NAVEGACIÓN POR PESTAÑAS ---
+            function activarTab(tabId) {
+                tabs.forEach(t => t.classList.remove('active'));
+                sections.forEach(s => s.classList.remove('active'));
+                const tabActiva = document.querySelector(`.tabs .tab[data-tab="${tabId}"]`);
+                const seccionActiva = document.getElementById(tabId);
+                if (tabActiva) tabActiva.classList.add('active');
+                if (seccionActiva) seccionActiva.classList.add('active');
+                window.location.hash = tabId; // Actualizar hash para deep linking y refresco
+            }
+            function configurarTabsNavegacion() {
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', function() {
+                        activarTab(this.dataset.tab);
+                    });
+                });
+                if (window.location.hash) {
+                    const hash = window.location.hash.substring(1);
+                    const tabToActivate = document.querySelector(`.tabs .tab[data-tab="${hash}"]`);
+                    if (tabToActivate) activarTab(hash); else activarTab('mis-diarios'); 
+                } else {
+                    activarTab('mis-diarios'); 
+                }
+            }
+
+            // --- CONFIGURACIÓN DE EVENTOS GENERALES ---
+            function configurarEventosVisualesEnTiempoReal() {
+                const inputsColor = document.querySelectorAll('.form-control-color');
+                inputsColor.forEach(input => {
+                    input.addEventListener('input', aplicarCambiosVisualesLocales);
+                });
+            }
+            function configurarAccionesSeguridad() {
+                const btnCambiarPass = document.getElementById('btn-cambiar-contrasena');
+                const btnExportar = document.getElementById('btn-exportar-datos');
+                const btnImportar = document.getElementById('btn-importar-datos');
+                const importFileInput = document.getElementById('import-file-input');
+                const btnEliminarCuenta = document.getElementById('btn-eliminar-cuenta');
+
+                if (btnCambiarPass) btnCambiarPass.addEventListener('click', () => {
+                    alert("Función de cambio de contraseña aún no implementada en esta interfaz.");
+                });
+
+                if (btnExportar) btnExportar.addEventListener('click', async () => {
+                    mostrarMensajeGlobal('Generando exportación...', 'carga', globalConfigMessageEl);
+                    try {
+                        const response = await fetch('/api/exportar-datos', {credentials: 'include'});
+                        if (!response.ok) throw new Error(`Error del servidor: ${response.status}`);
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = url;
+                        const filename = response.headers.get('content-disposition')?.split('filename=')[1]?.replace(/"/g, '') || `diario-bebe-export-${new Date().toISOString().split('T')[0]}.json`;
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        a.remove();
+                        mostrarMensajeGlobal('Datos exportados con éxito.', 'exito', globalConfigMessageEl, 3000);
+                    } catch (error) {
+                        console.error("Error al exportar datos:", error);
+                        mostrarMensajeGlobal('Error al exportar datos: ' + error.message, 'error', globalConfigMessageEl, 4000);
+                    }
+                });
+                
+                if (btnImportar && importFileInput) {
+                    btnImportar.addEventListener('click', () => importFileInput.click());
+                    importFileInput.addEventListener('change', async (event) => {
+                        const file = event.target.files[0];
+                        if (file) {
+                            if (file.type !== 'application/json') {
+                                mostrarMensajeGlobal('Por favor, selecciona un archivo .json válido.', 'error', globalConfigMessageEl, 3000);
+                                return;
+                            }
+                            mostrarMensajeGlobal('Importando datos...', 'carga', globalConfigMessageEl);
+                            try {
+                                const fileContent = await file.text();
+                                const jsonData = JSON.parse(fileContent);
+                                await fetchAPI('/api/importar-datos', 'POST', jsonData);
+                                mostrarMensajeGlobal('Datos importados con éxito. Se crearon nuevos diarios en tu cuenta.', 'exito', globalConfigMessageEl, 5000);
+                                await inicializarPaginaConfiguracion(); // Recargar para ver nuevos diarios
+                            } catch (error) {
+                                console.error("Error al importar datos:", error);
+                                mostrarMensajeGlobal('Error al importar datos: ' + error.message, 'error', globalConfigMessageEl, 5000);
+                            } finally {
+                                importFileInput.value = ''; // Resetear input
+                            }
+                        }
+                    });
+                }
+
+                if (btnEliminarCuenta) btnEliminarCuenta.addEventListener('click', () => {
+                     alert("Función de eliminar cuenta aún no implementada en esta interfaz. Contacta al administrador.");
+                });
+            }
+            
+            // --- INICIALIZACIÓN Y EVENT LISTENERS ---
+            popularSelectoresTipografia(); 
+            configurarTabsNavegacion();
+            configurarEventosVisualesEnTiempoReal();
+            configurarFotoBebe();
+            configurarAccionesSeguridad();
+            
+            if(btnLogout) btnLogout.addEventListener('click', cerrarSesion);
+            document.getElementById('btn-guardar-config-diario')?.addEventListener('click', guardarConfiguracionDelDiarioActivo);
+            document.getElementById('btn-restaurar-config-diario')?.addEventListener('click', restaurarValoresPredeterminadosDelDiario);
+            if(btnCrearNuevoDiarioModalEl) btnCrearNuevoDiarioModalEl.addEventListener('click', abrirModalCrearDiario);
+            if(btnCancelarCrearDiario) btnCancelarCrearDiario.addEventListener('click', cerrarModalCrearDiario);
+            if(formCrearDiario) formCrearDiario.addEventListener('submit', manejarSubmitCrearDiario);
+            if(formInvitarUsuario) formInvitarUsuario.addEventListener('submit', manejarSubmitInvitarUsuario);
+            
+            if(listaUsuariosCompartidosEl) {
+                listaUsuariosCompartidosEl.addEventListener('click', async (e) => {
+                    const targetButton = e.target.closest('button');
+                    if (!targetButton) return;
+
+                    const listItem = targetButton.closest('li');
+                    if (!listItem) return;
+
+                    const targetUserId = listItem.dataset.userId; 
+                    const targetUserEmail = listItem.dataset.userEmail; 
+
+                    if (targetButton.classList.contains('btn-revocar-acceso')) {
+                        await manejarRevocarAcceso(targetButton.dataset.targetUserId || targetUserId);
+                    } else if (targetButton.classList.contains('btn-actualizar-rol')) {
+                        if (!targetUserEmail || !currentActiveDiarioId) return;
+
+                        const selectRol = listItem.querySelector('.select-user-role-share');
+                        if (!selectRol) return;
+                        const nuevoRol = selectRol.value;
+
+                        mostrarMensajeGlobal('Actualizando rol...', 'carga', compartirMessageEl);
+                        try {
+                            await fetchAPI(`/api/diarios/${currentActiveDiarioId}/share`, 'POST', {
+                                email_invitado: targetUserEmail, 
+                                rol_asignado: nuevoRol
+                            });
+                            mostrarMensajeGlobal('Rol actualizado con éxito.', 'exito', compartirMessageEl, 3000);
+                            await cargarUsuariosCompartidosDelDiarioActivo(); 
+                        } catch (error) {
+                            console.error("Error actualizando rol:", error);
+                            mostrarMensajeGlobal(error.message || 'Error al actualizar el rol.', 'error', compartirMessageEl, 4000);
+                        }
+                    }
+                });
+            }
+
+
+            await inicializarPaginaConfiguracion(); 
+
+            window.addEventListener('activeDiarioChanged', async (event) => {
+                console.log('Configuracion.html: Diario activo cambiado a:', event.detail.diarioId);
+                currentActiveDiarioId = event.detail.diarioId; 
+                mostrarMensajeGlobal('Cargando configuración del nuevo diario activo...', 'carga', globalConfigMessageEl);
+                await inicializarPaginaConfiguracion(); 
+                mostrarMensajeGlobal('', '', globalConfigMessageEl);
+            });
+        });
+    </script>
+</body>
+</html>

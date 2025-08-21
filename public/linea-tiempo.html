@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="es" id="html-theme">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Revisa la cronología de todos los momentos especiales y el desarrollo de tu bebé">
+    <meta name="theme-color" content="#FFB6C1">
+    <title>Mi Pequeño Tesoro - Línea de Tiempo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Comic+Neue:wght@400;700&family=Roboto:wght@400;700&family=Open+Sans:wght@400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/main.css"> 
+    <style>
+    :root {
+        --color-primario: #FFB6C1;
+        --color-secundario: #FFD1DC;
+        --color-accento: #FFD700;
+        --color-texto: #5D3B45;
+        --color-texto-claro: #A78B94;
+        --color-fondo: #FFF9FB;
+        --color-tarjetas: #FFFFFF;
+        --color-bordes: #F0D6DE;
+        --color-error: #ff6b6b;
+        --color-exito: #28a745;
+
+        /* Fuentes */
+        --fuente-principal: 'Comic Neue', cursive;
+        --fuente-secundaria: 'Open Sans', sans-serif;
+        --fuente-titulo: 'Pacifico', cursive;
+        --fuente-decorativa: 'Dancing Script', cursive;
+
+        --tamano-fuente: 16px;
+    }
+
+    body {
+        font-family: var(--fuente-principal);
+        background-color: var(--color-fondo);
+        color: var(--color-texto);
+        margin: 0;
+        padding: 0;
+        line-height: 1.6;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: var(--color-tarjetas);
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    header {
+        text-align: center;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--color-bordes);
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    header h1 {
+        font-family: var(--fuente-titulo);
+        color: var(--color-primario);
+        margin: 0;
+        font-size: 2.2em;
+        flex-grow: 1;
+        text-align: center;
+    }
+    
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 1em;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+
+    .btn-primario {
+        background-color: var(--color-primario);
+        color: white;
+    }
+
+    .btn-primario:hover {
+        background-color: #FF8BA6;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-secundario {
+        background-color: var(--color-secundario);
+        color: var(--color-texto);
+    }
+
+    .btn-secundario:hover {
+        background-color: #FFC0CB;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-icono {
+        background: none;
+        border: none;
+        font-size: 1.5em;
+        cursor: pointer;
+        color: var(--color-texto);
+        padding: 5px;
+        border-radius: 50%;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-icono:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    nav ul li a {
+        text-decoration: none;
+        color: var(--color-texto);
+        font-weight: bold;
+        padding: 8px 15px;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+    }
+
+    nav ul li a:hover,
+    nav ul li a.active {
+        background-color: var(--color-primario);
+        color: white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .filters-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: var(--color-secundario);
+        border-radius: 10px;
+        align-items: flex-end;
+    }
+
+    .filter-group {
+        flex: 1;
+        min-width: 150px;
+    }
+
+    .filter-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: var(--color-texto);
+        font-size: 0.9em;
+    }
+
+    .filters-container input[type="text"],
+    .filters-container input[type="date"],
+    .filters-container select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid var(--color-bordes);
+        border-radius: 5px;
+        font-family: var(--fuente-principal);
+        font-size: 0.9em;
+        box-sizing: border-box;
+        background-color: var(--color-tarjetas);
+        color: var(--color-texto);
+    }
+
+    .filters-container button {
+        padding: 8px 15px;
+        border-radius: 8px;
+        font-size: 0.9em;
+        margin-top: 10px; /* Para alinear con los inputs */
+    }
+
+    .timeline {
+        position: relative;
+        padding: 20px 0;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background-color: var(--color-bordes);
+        left: 50%;
+        margin-left: -2px;
+    }
+
+    .timeline-item {
+        display: flex;
+        justify-content: flex-end;
+        position: relative;
+        margin-bottom: 40px;
+        width: 50%;
+        padding-left: 30px;
+        box-sizing: border-box;
+    }
+
+    .timeline-item:nth-child(even) {
+        justify-content: flex-start;
+        padding-left: 0;
+        padding-right: 30px;
+        margin-left: 50%;
+    }
+
+    .timeline-item-content {
+        background-color: var(--color-tarjetas);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        width: 100%;
+        position: relative;
+        border: 1px solid var(--color-bordes);
+    }
+
+    .timeline-item-content::before {
+        content: '';
+        position: absolute;
+        top: 20px;
+        width: 0;
+        height: 0;
+        border-style: solid;
+    }
+
+    .timeline-item:nth-child(odd) .timeline-item-content::before {
+        border-width: 10px 0 10px 10px;
+        border-color: transparent transparent transparent var(--color-bordes);
+        left: -10px;
+    }
+
+    .timeline-item:nth-child(even) .timeline-item-content::before {
+        border-width: 10px 10px 10px 0;
+        border-color: transparent var(--color-bordes) transparent transparent;
+        right: -10px;
+    }
+
+    .timeline-item-content h3 {
+        color: var(--color-primario);
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-family: var(--fuente-secundaria);
+        font-size: 1.3em;
+    }
+
+    .timeline-item-content p {
+        margin-bottom: 10px;
+        color: var(--color-texto);
+    }
+
+    .timeline-item-content .date-time {
+        font-size: 0.9em;
+        color: var(--color-texto-claro);
+        margin-bottom: 15px;
+        display: block;
+    }
+
+    .timeline-item-content .media {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin-top: 10px;
+        display: block;
+        object-fit: cover; /* Asegura que la imagen se ajuste sin distorsión */
+        max-height: 200px; /* Limita la altura para no desbordar */
+    }
+
+    .timeline-item-content .media.video {
+        width: 100%;
+        height: 150px; /* Altura fija para videos en la línea de tiempo */
+    }
+
+    .timeline-item .icon {
+        position: absolute;
+        top: 20px;
+        width: 30px;
+        height: 30px;
+        background-color: var(--color-primario);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2em;
+        z-index: 1;
+    }
+
+    .timeline-item:nth-child(odd) .icon {
+        left: calc(50% - 15px - 2px); /* Ajuste para centrar en la línea */
+    }
+
+    .timeline-item:nth-child(even) .icon {
+        right: calc(50% - 15px - 2px); /* Ajuste para centrar en la línea */
+    }
+
+    /* Estilos para el loader de infinite scroll */
+    .loader {
+        text-align: center;
+        padding: 20px;
+        font-size: 1.2em;
+        color: var(--color-texto-claro);
+    }
+
+    .loader.hidden {
+        display: none;
+    }
+
+    /* Mensajes de estado */
+    .mensaje {
+        padding: 10px 15px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        text-align: center;
+    }
+    .mensaje.carga {
+        background-color: #e0f7fa;
+        color: #00796b;
+    }
+    .mensaje.error {
+        background-color: var(--color-error);
+        color: white;
+    }
+    .mensaje.exito {
+        background-color: var(--color-exito);
+        color: white;
+    }
+    .mensaje.vacio {
+        background-color: #fff3e0;
+        color: #e65100;
+    }
+
+    /* Estilo para elemento destacado (al llegar desde un hash URL) */
+    .timeline-item.destacado .timeline-item-content {
+        box-shadow: 0 0 0 3px var(--color-accento), 0 2px 10px rgba(0, 0, 0, 0.08);
+        transition: box-shadow 0.5s ease-in-out;
+    }
+
+    /* Footer */
+    footer {
+        text-align: center;
+        padding: 20px;
+        margin-top: 30px;
+        border-top: 1px solid var(--color-bordes);
+        color: var(--color-texto-claro);
+        font-size: 0.9em;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .timeline::before {
+            left: 20px;
+            margin-left: 0;
+        }
+
+        .timeline-item {
+            width: 100%;
+            padding-left: 50px;
+            padding-right: 0;
+        }
+
+        .timeline-item:nth-child(even) {
+            margin-left: 0;
+            padding-left: 50px;
+            padding-right: 0;
+        }
+
+        .timeline-item-content::before {
+            border-width: 10px 10px 10px 0 !important;
+            border-color: transparent var(--color-bordes) transparent transparent !important;
+            left: 40px !important;
+            right: auto !important;
+        }
+
+        .timeline-item:nth-child(odd) .timeline-item-content::before {
+            left: 40px;
+        }
+
+        .timeline-item .icon {
+            left: 5px;
+            top: 20px;
+        }
+        .timeline-item:nth-child(even) .icon {
+            left: 5px; /* Asegura que el ícono esté a la izquierda también en pantallas pequeñas */
+            right: auto;
+        }
+
+        .filters-container {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .filter-group {
+            min-width: unset;
+            width: 100%;
+        }
+        .filters-container button {
+            width: 100%;
+            margin-top: 15px;
+        }
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <button id="btn-back" class="btn-icono" title="Volver a Inicio" onclick="window.history.back()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-left"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+            </button>
+            <h1 id="nombre-app-titulo">✨ Mi Pequeño Tesoro</h1>
+            <button id="btn-logout" class="btn-icono" title="Cerrar Sesión">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+            </button>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="fotos.html">Fotos y Videos</a></li>
+                <li><a href="calendario.html">Calendario</a></li>
+                <li><a href="linea-tiempo.html" class="active">Línea de Tiempo</a></li>
+                <li><a href="configuracion.html">Configuración</a></li>
+            </ul>
+        </nav>
+
+        <div id="global-message" class="mensaje"></div>
+        <div class="diario-activo-info" id="diario-activo-info" style="display:none;">
+            Diario actual: <strong id="nombre-diario-actual"></strong>
+        </div>
+
+        <!-- Controles de Búsqueda y Filtros -->
+        <div class="filters-container">
+            <div class="filter-group">
+                <label for="search-query">Buscar:</label>
+                <input type="text" id="search-query" placeholder="Descripción o notas...">
+            </div>
+            <div class="filter-group">
+                <label for="filter-type">Tipo de Evento:</label>
+                <select id="filter-type">
+                    <option value="">Todos</option>
+                    <option value="alimentacion">Alimentación</option>
+                    <option value="sueno">Sueño</option>
+                    <option value="cambio_panal">Cambio de Pañal</option>
+                    <option value="hito">Hito</option>
+                    <option value="vacuna">Vacuna</option>
+                    <option value="control_medico">Control Médico</option>
+                    <option value="general">General</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filter-date-start">Fecha Inicio:</label>
+                <input type="date" id="filter-date-start">
+            </div>
+            <div class="filter-group">
+                <label for="filter-date-end">Fecha Fin:</label>
+                <input type="date" id="filter-date-end">
+            </div>
+            <div class="filter-group">
+                <label for="filter-favorite">Favorito:</label>
+                <select id="filter-favorite">
+                    <option value="">Todos</option>
+                    <option value="1">Sí</option>
+                </select>
+            </div>
+            <button id="apply-filters" class="btn btn-primario">Aplicar Filtros</button>
+            <button id="clear-filters" class="btn btn-secundario">Limpiar Filtros</button>
+        </div>
+
+        <main class="timeline" id="timeline-container">
+            <!-- Los eventos se cargarán aquí -->
+        </main>
+
+        <div id="loader" class="loader hidden">Cargando más eventos...</div>
+        <div id="no-more-events" class="mensaje vacio hidden">No hay más eventos para mostrar.</div>
+    </div>
+
+    <footer>
+        <p>&copy; <span id="current-year"></span> Mi Pequeño Tesoro. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="/js/utils.js"></script>
+    <script src="/js/theme-manager.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const lineaTiempoEl = document.getElementById('timeline-container');
+            const loaderEl = document.getElementById('loader');
+            const noMoreEventsEl = document.getElementById('no-more-events');
+            const globalTimelineMessageEl = document.getElementById('global-message');
+            const btnLogout = document.getElementById('btn-logout');
+
+            // Elementos de filtro
+            const searchQueryInput = document.getElementById('search-query');
+            const filterTypeSelect = document.getElementById('filter-type');
+            const filterDateStartInput = document.getElementById('filter-date-start');
+            const filterDateEndInput = document.getElementById('filter-date-end');
+            const filterFavoriteSelect = document.getElementById('filter-favorite');
+            const applyFiltersBtn = document.getElementById('apply-filters');
+            const clearFiltersBtn = document.getElementById('clear-filters');
+
+            let currentPage = 0;
+            const eventsPerPage = 10; // Cantidad de eventos a cargar por página
+            let isLoading = false;
+            let hasMoreEvents = true; // Indica si hay más eventos para cargar
+            let currentActiveDiarioId = null; // Para almacenar el ID del diario activo
+
+            // Función para obtener el icono basado en el tipo de evento
+            function getEventTypeIcon(type) {
+                switch (type) {
+                    case 'alimentacion': return '🍼';
+                    case 'sueno': return '😴';
+                    case 'cambio_panal': return '💩';
+                    case 'hito': return '⭐'; // Cambiado a estrella para hito
+                    case 'vacuna': return '💉';
+                    case 'control_medico': return '🩺';
+                    case 'general': return '📝';
+                    default: return '✨';
+                }
+            }
+
+            // Función para crear un elemento de la línea de tiempo
+            function crearElementoTimeline(evento) {
+                const item = document.createElement('div');
+                item.classList.add('timeline-item');
+                item.id = `evento-${evento.id}`; // Para el hash URL
+
+                const icon = document.createElement('div');
+                icon.classList.add('icon');
+                icon.textContent = getEventTypeIcon(evento.tipo);
+
+                const content = document.createElement('div');
+                content.classList.add('timeline-item-content');
+
+                const dateTime = document.createElement('span');
+                dateTime.classList.add('date-time');
+                dateTime.textContent = `${evento.fecha} ${evento.hora}`;
+
+                const title = document.createElement('h3');
+                title.textContent = evento.tipo.charAt(0).toUpperCase() + evento.tipo.slice(1).replace('_', ' '); // Capitalizar y reemplazar guiones
+
+                const description = document.createElement('p');
+                description.textContent = evento.descripcion || 'Sin descripción.';
+
+                content.appendChild(dateTime);
+                content.appendChild(title);
+                content.appendChild(description);
+
+                if (evento.cantidad && evento.unidad) {
+                    const cantidadEl = document.createElement('p');
+                    cantidadEl.textContent = `Cantidad: ${evento.cantidad} ${evento.unidad}`;
+                    content.appendChild(cantidadEl);
+                }
+                if (evento.notas) {
+                    const notasEl = document.createElement('p');
+                    notasEl.textContent = `Notas: ${evento.notas}`;
+                    content.appendChild(notasEl);
+                }
+
+                item.appendChild(icon);
+                item.appendChild(content);
+
+                return item;
+            }
+
+            // Función para cargar eventos desde la API
+            async function cargarEventosDeAPI(reset = false) {
+                if (isLoading && !reset) {
+                    return;
+                }
+
+                if (reset) {
+                    currentPage = 0;
+                    lineaTiempoEl.innerHTML = ''; // Limpiar eventos anteriores
+                    hasMoreEvents = true;
+                    mostrarMensajeGlobal('', '', globalTimelineMessageEl); // Limpiar mensajes
+                }
+
+                if (!hasMoreEvents || !currentActiveDiarioId) {
+                    loaderEl.classList.add('hidden');
+                    if (lineaTiempoEl.children.length === 0) { // Si no hay eventos después de un filtro
+                        mostrarMensajeGlobal('No se encontraron eventos con los filtros aplicados.', 'vacio', globalTimelineMessageEl);
+                    } else if (!hasMoreEvents && currentPage > 0) {
+                        noMoreEventsEl.classList.remove('hidden');
+                    }
+                    return;
+                }
+
+                isLoading = true;
+                loaderEl.classList.remove('hidden');
+                noMoreEventsEl.classList.add('hidden'); 
+
+                try {
+                    const offset = currentPage * eventsPerPage;
+                    const queryParams = new URLSearchParams();
+                    queryParams.append('limit', eventsPerPage);
+                    queryParams.append('offset', offset);
+                    queryParams.append('diario_id', currentActiveDiarioId);
+
+                    const searchQuery = searchQueryInput.value.trim();
+                    if (searchQuery) queryParams.append('searchQuery', searchQuery);
+                    if (filterTypeSelect.value) queryParams.append('tipo', filterTypeSelect.value);
+                    if (filterDateStartInput.value) queryParams.append('fechaInicio', filterDateStartInput.value);
+                    if (filterDateEndInput.value) queryParams.append('fechaFin', filterDateEndInput.value);
+                    if (filterFavoriteSelect.value) queryParams.append('favorito', filterFavoriteSelect.value);
+
+                    const response = await fetchAPI(`/api/eventos?${queryParams.toString()}`, 'GET');
+                    const { eventos, total } = response;
+
+                    if (eventos.length === 0 && currentPage === 0) {
+                        mostrarMensajeGlobal('No hay eventos registrados en este diario.', 'vacio', globalTimelineMessageEl);
+                        hasMoreEvents = false;
+                        loaderEl.classList.add('hidden');
+                        return;
+                    }
+
+                    eventos.forEach(evento => {
+                        const elemento = crearElementoTimeline(evento);
+                        lineaTiempoEl.appendChild(elemento);
+                    });
+
+                    currentPage++;
+                    if (eventos.length < eventsPerPage) {
+                        hasMoreEvents = false;
+                        noMoreEventsEl.classList.remove('hidden');
+                    } else {
+                        noMoreEventsEl.classList.add('hidden');
+                    }
+
+                    procesarHashUrl();
+                } catch (error) {
+                    console.error("Error al cargar eventos:", error);
+                    mostrarMensajeGlobal('Error al cargar eventos. Intenta de nuevo más tarde.', 'error', globalTimelineMessageEl);
+                    hasMoreEvents = false;
+                } finally {
+                    isLoading = false;
+                    loaderEl.classList.add('hidden');
+                }
+            }
+
+            // Observer para el "infinite scroll"
+            const loaderObserver = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting && !isLoading && hasMoreEvents) {
+                    cargarEventosDeAPI();
+                }
+            }, { threshold: 1.0 });
+
+            // Función para inicializar la página de línea de tiempo
+            async function inicializarPaginaTimeline() {
+                // Resetear estado de paginación y limpiar UI
+                currentPage = 0;
+                isLoading = false;
+                hasMoreEvents = true;
+                lineaTiempoEl.innerHTML = '';
+                loaderEl.classList.add('hidden');
+                noMoreEventsEl.classList.add('hidden');
+                mostrarMensajeGlobal('', '', globalTimelineMessageEl);
+
+                // Cargar la configuración del diario activo
+                await inicializarPaginaConDiarioActivo({
+                    elementosComunes: {
+                        globalMessageEl: globalTimelineMessageEl,
+                        nombreDiarioActualEl: document.getElementById('nombre-diario-actual'),
+                        diarioActivoInfoEl: document.getElementById('diario-activo-info'),
+                        tituloPrincipalEl: document.getElementById('nombre-app-titulo')
+                    },
+                    callbackConConfig: (configDiario) => {
+                        if (configDiario && configDiario.id) {
+                            currentActiveDiarioId = configDiario.id;
+                            cargarEventosDeAPI(); // Iniciar la carga de eventos
+                        } else {
+                            mostrarMensajeGlobal('No se ha seleccionado un diario activo. Por favor, selecciona uno en la página de inicio o crea uno nuevo.', 'error', globalTimelineMessageEl);
+                            hasMoreEvents = false;
+                        }
+                    }
+                });
+            }
+
+            function procesarHashUrl() {
+                if (window.location.hash) {
+                    const elementoId = window.location.hash.substring(1); 
+                    const elemento = document.getElementById(elementoId);
+                    if (elemento) {
+                        setTimeout(() => { 
+                            elemento.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            elemento.classList.add('destacado');
+                            setTimeout(() => {
+                                elemento.classList.remove('destacado');
+                            }, 3000);
+                        }, 100);
+                    }
+                }
+            }
+            
+            function configurarEventListeners() {
+                if (loaderEl) {
+                    loaderObserver.observe(loaderEl);
+                }
+                btnLogout.addEventListener('click', cerrarSesion);
+
+                // Eventos para filtros
+                applyFiltersBtn.addEventListener('click', () => cargarEventosDeAPI(true)); // Pasar true para resetear
+                clearFiltersBtn.addEventListener('click', () => {
+                    searchQueryInput.value = '';
+                    filterTypeSelect.value = '';
+                    filterDateStartInput.value = '';
+                    filterDateEndInput.value = '';
+                    filterFavoriteSelect.value = '';
+                    cargarEventosDeAPI(true); // Resetear y recargar
+                });
+
+                // Escuchar cambios en el diario activo
+                window.addEventListener('activeDiarioChanged', async (event) => {
+                    console.log('Linea-Tiempo.html: Diario activo cambiado a:', event.detail.diarioId);
+                    mostrarMensajeGlobal('Cargando línea de tiempo del nuevo diario...', 'carga', globalTimelineMessageEl);
+                    await inicializarPaginaTimeline(); // Recargar todo con el nuevo contexto del diario
+                    mostrarMensajeGlobal('', '', globalTimelineMessageEl);
+                });
+            }
+
+            // --- INICIALIZACIÓN ---
+            configurarEventListeners();
+            await inicializarPaginaTimeline();
+        });
+    </script>
+</body>
+</html>
